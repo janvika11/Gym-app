@@ -2,12 +2,16 @@ import express from 'express';
 import Member from '../models/Member.js';
 import Plan from '../models/Plan.js';
 import ReminderLog from '../models/ReminderLog.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { gymFilter } from '../utils/gymFilter.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const members = await Member.find().populate('plan');
+    const filter = gymFilter(req.admin);
+    const members = await Member.find(filter).populate('plan');
 
     const activeMembers = members.filter((m) => m.active !== false).length;
 
@@ -48,7 +52,7 @@ router.get('/', async (req, res) => {
         totalMembers) *
       100;
 
-    const recentActivity = await ReminderLog.find()
+    const recentActivity = await ReminderLog.find(filter)
       .sort({ createdAt: -1 })
       .limit(5)
       .lean();

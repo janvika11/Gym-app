@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 const adminSchema = new mongoose.Schema(
   {
+    gym: { type: mongoose.Schema.Types.ObjectId, ref: 'Gym' },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String, default: 'Admin' },

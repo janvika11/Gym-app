@@ -1,7 +1,11 @@
 import express from 'express';
 import AttendanceLog from '../models/AttendanceLog.js';
+import Member from '../models/Member.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { gymFilter } from '../utils/gymFilter.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 function normalizeDate(date) {
   const d = date ? new Date(date) : new Date();
@@ -15,6 +19,9 @@ router.post('/check-in', async (req, res) => {
     if (!memberId) {
       return res.status(400).json({ message: 'memberId is required' });
     }
+    const memberFilter = { _id: memberId, ...gymFilter(req.admin) };
+    const member = await Member.findOne(memberFilter);
+    if (!member) return res.status(404).json({ message: 'Member not found' });
     const day = normalizeDate(date);
 
     await AttendanceLog.findOneAndUpdate(
@@ -57,11 +64,14 @@ router.get('/month', async (req, res) => {
 
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 1);
+    const filter = gymFilter(req.admin);
+    const memberIds = filter.gym ? (await Member.find(filter).select('_id')).map((m) => m._id) : null;
 
     const logs = await AttendanceLog.aggregate([
       {
         $match: {
           date: { $gte: start, $lt: end },
+          ...(memberIds ? { member: { $in: memberIds } } : {}),
         },
       },
       {
@@ -106,10 +116,12 @@ router.get('/today-hours', async (req, res) => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const filter = gymFilter(req.admin);
+    const memberIds = filter.gym ? (await Member.find(filter).select('_id')).map((m) => m._id) : null;
 
-    const logs = await AttendanceLog.find({
-      createdAt: { $gte: start, $lt: end },
-    }).select('createdAt');
+    const match = { createdAt: { $gte: start, $lt: end } };
+    if (memberIds) match.member = { $in: memberIds };
+    const logs = await AttendanceLog.find(match).select('createdAt');
 
     const result = {};
     for (const log of logs) {

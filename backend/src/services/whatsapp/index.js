@@ -93,10 +93,27 @@ export async function sendReminder(to, title, body) {
   return sendText(to, text);
 }
 
+/**
+ * Send welcome template (for new members – no 24hr rule)
+ * Set META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_welcome and create in Meta:
+ * Body: "Hi {{1}}, welcome to our gym! We're excited to have you. 💪"
+ * If not set, uses hello_world (generic, no name).
+ */
+export async function sendWelcomeTemplate(to, memberName) {
+  const templateName = process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'hello_world';
+  const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US';
+  const components =
+    templateName !== 'hello_world' && memberName
+      ? [{ type: 'body', parameters: [{ type: 'text', text: String(memberName) }] }]
+      : [];
+  return sendTemplate(to, templateName, lang, components);
+}
+
 export default {
   getWhatsAppConfig,
   sendWhatsAppMessage,
   sendText,
   sendTemplate,
   sendReminder,
+  sendWelcomeTemplate,
 };

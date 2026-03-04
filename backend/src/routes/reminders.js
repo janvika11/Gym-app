@@ -35,11 +35,12 @@ router.post('/send', async (req, res) => {
       return res.status(400).json({ message: 'memberId, title and body required' });
     }
 
-    const member = await Member.findById(memberId).populate('plan');
+    const filter = { _id: memberId, ...gymFilter(req.admin) };
+    const member = await Member.findOne(filter).populate('plan');
     if (!member) return res.status(404).json({ message: 'Member not found' });
     if (!member.phone) return res.status(400).json({ message: 'Member has no phone number' });
 
-    const phoneDigits = member.phone.replace(/\D/g, '');
+    const phoneDigits = member.phone.replace(/\D/g, '').replace(/^0+/, '');
     const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
 
     const personalizedBody = renderBodyTemplate(body, member);
@@ -84,10 +85,14 @@ router.post('/send-bulk', async (req, res) => {
 
     for (let i = 0; i < memberIds.length; i += BATCH_SIZE) {
       const batchIds = memberIds.slice(i, i + BATCH_SIZE);
+      const gymId = req.admin?.gym?._id || req.admin?.gym;
+      const memberFilter = gymFilter(req.admin);
       const batchPromises = batchIds.map(async (memberId) => {
-        const member = await Member.findById(memberId).populate('plan');
+        const filter = { _id: memberId, ...memberFilter };
+        const member = await Member.findOne(filter).populate('plan');
         if (!member?.phone) {
           await ReminderLog.create({
+            gym: gymId,
             member: member?._id,
             memberName: member?.name,
             phone: member?.phone,
@@ -99,7 +104,7 @@ router.post('/send-bulk', async (req, res) => {
           return { memberId, success: false, error: 'No phone number' };
         }
 
-        const phoneDigits = member.phone.replace(/\D/g, '');
+        const phoneDigits = member.phone.replace(/\D/g, '').replace(/^0+/, '');
         const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
 
         const personalizedBody = renderBodyTemplate(body, member);
@@ -149,8 +154,9 @@ router.get('/logs', async (req, res) => {
       parseInt(req.query.limit, 10) || 20,
       100
     );
+    const filter = gymFilter(req.admin);
 
-    const logs = await ReminderLog.find()
+    const logs = await ReminderLog.find(filter)
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean();

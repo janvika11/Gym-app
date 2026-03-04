@@ -1,22 +1,19 @@
 import { useState, useEffect } from 'react';
-import { getMembers, sendBulkReminders, getReminderLogs } from '../api';
+import { getMembers, sendBulkReminders, getReminderLogs, getSettings } from '../api';
 import './Reminders.css';
 
-const MESSAGE_TEMPLATES = {
+const DEFAULT_TEMPLATES = {
   fee_reminder: {
     title: 'Fee reminder',
-    body:
-      'Hi {name}! Your gym membership fee of ₹{fee} is due on {date}. Please make the payment to continue your fitness journey. 💪',
+    body: 'Hi {name}! Your gym membership fee of ₹{fee} is due on {date}. Please make the payment to continue your fitness journey. 💪',
   },
   expired: {
     title: 'Membership expired',
-    body:
-      'Hi {name}! Your gym membership has expired. We miss you! Renew now and get back on track. 🔥',
+    body: 'Hi {name}! Your gym membership has expired. We miss you! Renew now and get back on track. 🔥',
   },
   attendance: {
     title: 'Attendance reminder',
-    body:
-      "Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 🏋️",
+    body: "Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 🏋️",
   },
   custom: {
     title: 'Custom message',
@@ -31,9 +28,13 @@ export default function Reminders() {
   const [error, setError] = useState('');
   const [composeOpen, setComposeOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
+  const [overdueBody, setOverdueBody] = useState('Hi {name}! Your gym membership fee is overdue. Please clear your dues to continue enjoying our facilities. 💪');
+  const [expiringBody, setExpiringBody] = useState('Hi {name}! Your membership is expiring soon. Renew now to keep your progress going. 🏋️');
+  const [inactiveBody, setInactiveBody] = useState("Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 💪");
   const [templateKey, setTemplateKey] = useState('fee_reminder');
-  const [title, setTitle] = useState(MESSAGE_TEMPLATES.fee_reminder.title);
-  const [body, setBody] = useState(MESSAGE_TEMPLATES.fee_reminder.body);
+  const [title, setTitle] = useState(DEFAULT_TEMPLATES.fee_reminder.title);
+  const [body, setBody] = useState(DEFAULT_TEMPLATES.fee_reminder.body);
   const [sendingGroup, setSendingGroup] = useState(null);
   const [sendingCompose, setSendingCompose] = useState(false);
   const [autoRunning, setAutoRunning] = useState(false);
@@ -43,10 +44,25 @@ export default function Reminders() {
     Promise.all([
       getMembers().then((list) => list.filter((m) => m.phone)),
       getReminderLogs(20).catch(() => []),
+      getSettings().catch(() => null),
     ])
-      .then(([m, l]) => {
+      .then(([m, l, s]) => {
         setMembers(m);
         setLogs(l);
+        if (s) {
+          const merged = {
+            ...DEFAULT_TEMPLATES,
+            fee_reminder: { title: 'Fee reminder', body: s.feeReminderMessage || DEFAULT_TEMPLATES.fee_reminder.body },
+            expired: { title: 'Membership expired', body: s.overdueMessage || DEFAULT_TEMPLATES.expired.body },
+            attendance: { title: 'Attendance reminder', body: s.inactiveMessage || DEFAULT_TEMPLATES.attendance.body },
+          };
+          setTemplates(merged);
+          setOverdueBody(s.overdueMessage || DEFAULT_TEMPLATES.expired.body);
+          setExpiringBody(s.expiringMessage || 'Hi {name}! Your membership is expiring soon. Renew now to keep your progress going. 🏋️');
+          setInactiveBody(s.inactiveMessage || DEFAULT_TEMPLATES.attendance.body);
+          setTitle(merged.fee_reminder?.title || title);
+          setBody(merged.fee_reminder?.body || body);
+        }
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -99,8 +115,8 @@ export default function Reminders() {
 
   const openCompose = () => {
     setTemplateKey('fee_reminder');
-    setTitle(MESSAGE_TEMPLATES.fee_reminder.title);
-    setBody(MESSAGE_TEMPLATES.fee_reminder.body);
+    setTitle(templates.fee_reminder?.title || DEFAULT_TEMPLATES.fee_reminder.title);
+    setBody(templates.fee_reminder?.body || DEFAULT_TEMPLATES.fee_reminder.body);
     setSelectedIds([]);
     setComposeOpen(true);
   };
@@ -108,7 +124,7 @@ export default function Reminders() {
   const handleTemplateChange = (e) => {
     const key = e.target.value;
     setTemplateKey(key);
-    const tpl = MESSAGE_TEMPLATES[key];
+    const tpl = templates[key] || DEFAULT_TEMPLATES[key];
     if (!tpl || key === 'custom') return;
     setTitle(tpl.title);
     setBody(tpl.body);
@@ -251,12 +267,7 @@ export default function Reminders() {
           description="Send reminders to all overdue"
           color="#FFD740"
           onSendAll={() =>
-            sendBulkGroup(
-              'fee_overdue',
-              overdueMembers.map((m) => m._id),
-              'Fee overdue',
-              'Hi {name}! Your gym membership fee is overdue. Please clear your dues to continue enjoying our facilities. 💪'
-            )
+            sendBulkGroup('fee_overdue', overdueMembers.map((m) => m._id), 'Fee overdue', overdueBody)
           }
           sending={sendingGroup === 'fee_overdue'}
         />
@@ -281,12 +292,7 @@ export default function Reminders() {
           description="Re-engagement messages"
           color="#64B5F6"
           onSendAll={() =>
-            sendBulkGroup(
-              'inactive',
-              inactiveMembers.map((m) => m._id),
-              'We miss you at the gym',
-              "Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 💪"
-            )
+            sendBulkGroup('inactive', inactiveMembers.map((m) => m._id), 'We miss you at the gym', inactiveBody)
           }
           sending={sendingGroup === 'inactive'}
         />

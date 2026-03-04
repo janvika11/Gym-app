@@ -200,6 +200,31 @@ export async function sendBulkReminders(memberIds, title, body) {
   return data;
 }
 
+export async function getSettings() {
+  const res = await fetch(`${API_BASE}/settings`, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to fetch settings');
+  return data;
+}
+
+export async function updateSettings(body) {
+  const res = await fetch(`${API_BASE}/settings`, {
+    method: 'PUT',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to update settings');
+  return data;
+}
+
+export async function getWhatsAppSubscribeLink() {
+  const res = await fetch(`${API_BASE}/config/whatsapp-link`, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to fetch');
+  return data;
+}
+
 export async function getReminderLogs(limit = 20) {
   const res = await fetch(`${API_BASE}/reminders/logs?limit=${limit}`, {
     headers: headers(),

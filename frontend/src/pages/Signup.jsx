@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../api';
+import { signup } from '../api';
 import './Login.css';
 
-export default function Login() {
+export default function Signup() {
   const navigate = useNavigate();
+  const [gymName, setGymName] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,11 +17,11 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const { token } = await login(email, password);
+      const { token } = await signup(gymName, email, password, name);
       localStorage.setItem('token', token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.message || 'Signup failed');
     } finally {
       setLoading(false);
     }
@@ -29,10 +31,29 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card">
         <h1>Gym Admin</h1>
-        <p className="login-sub">Sign in to manage members and plans</p>
+        <p className="login-sub">Create your gym account</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>Gym name *</label>
+            <input
+              type="text"
+              value={gymName}
+              onChange={(e) => setGymName(e.target.value)}
+              placeholder="My Fitness Gym"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Your name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Admin"
+            />
+          </div>
+          <div className="form-group">
+            <label>Email *</label>
             <input
               type="email"
               value={email}
@@ -43,23 +64,24 @@ export default function Login() {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>Password *</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              autoComplete="current-password"
+              minLength={6}
+              autoComplete="new-password"
             />
           </div>
           {error && <p className="login-error">{error}</p>}
           <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
         <p className="login-footer">
-          New gym? <Link to="/signup">Sign up</Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
     </div>

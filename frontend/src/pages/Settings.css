@@ -1,0 +1,13 @@
+.settings-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+.settings-hint {
+  margin: 0 0 1rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+.settings-card textarea {
+  font-family: inherit;
+  resize: vertical;
+}

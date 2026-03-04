@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getMember, createMember, updateMember, getPlans } from '../api';
+import { getMember, createMember, updateMember, getPlans, getWhatsAppSubscribeLink } from '../api';
 import './MemberForm.css';
 
 export default function MemberForm() {
@@ -20,6 +20,10 @@ export default function MemberForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [sendWelcome, setSendWelcome] = useState(true);
+  const [subscribeLink, setSubscribeLink] = useState(null);
+  const [justAddedName, setJustAddedName] = useState('');
+  const [welcomeSent, setWelcomeSent] = useState(false);
 
   useEffect(() => {
     getPlans()
@@ -34,10 +38,11 @@ export default function MemberForm() {
     if (!id) return;
     getMember(id)
       .then((m) => {
+        const phone = String(m.phone || '').replace(/\D/g, '').replace(/^0+/, '').replace(/^91/, '').slice(-10);
         setForm({
           name: m.name || '',
           email: m.email || '',
-          phone: m.phone || '',
+          phone,
           plan: m.plan?._id || '',
           startDate: m.startDate ? m.startDate.slice(0, 10) : '',
           endDate: m.endDate ? m.endDate.slice(0, 10) : '',
@@ -50,7 +55,16 @@ export default function MemberForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+    let val = type === 'checkbox' ? checked : value;
+    if (name === 'phone' && typeof val === 'string') {
+      val = val.replace(/\D/g, '').replace(/^0+/, '').replace(/^91/, '').slice(0, 10);
+    }
+    setForm((f) => ({ ...f, [name]: val }));
+  };
+
+  const normalizePhone = (p) => {
+    const digits = String(p || '').replace(/\D/g, '').replace(/^0+/, '').replace(/^91/, '');
+    return digits.slice(-10);
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +73,7 @@ export default function MemberForm() {
     setLoading(true);
     const payload = {
       ...form,
+      phone: normalizePhone(form.phone),
       plan: form.plan || undefined,
       startDate: form.startDate || undefined,
       endDate: form.endDate || undefined,
@@ -66,10 +81,18 @@ export default function MemberForm() {
     try {
       if (isEdit) {
         await updateMember(id, payload);
+        navigate('/members');
       } else {
-        await createMember(payload);
+        const payloadWithWelcome = { ...payload, sendWelcome };
+        const created = await createMember(payloadWithWelcome);
+        setJustAddedName(form.name);
+        setWelcomeSent(!!created.welcomeSent);
+        if (!sendWelcome) {
+          const { link } = await getWhatsAppSubscribeLink().catch(() => ({ link: null }));
+          if (link) setSubscribeLink(link);
+          else navigate('/members');
+        }
       }
-      navigate('/members');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -94,7 +117,7 @@ export default function MemberForm() {
             </div>
             <div className="form-group">
               <label>Phone *</label>
-              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="10 digits" />
+              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="10 digits (e.g. 9876543210)" />
             </div>
           </div>
           <div className="form-group">
@@ -130,6 +153,14 @@ export default function MemberForm() {
               Active
             </label>
           </div>
+          {!isEdit && (
+            <div className="form-group form-check">
+              <label>
+                <input type="checkbox" checked={sendWelcome} onChange={(e) => setSendWelcome(e.target.checked)} />
+                Send welcome message via WhatsApp (no need for member to message first)
+              </label>
+            </div>
+          )}
           {error && <p className="form-error">{error}</p>}
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={loading}>
@@ -141,6 +172,25 @@ export default function MemberForm() {
           </div>
         </form>
       </div>
+
+      {welcomeSent && (
+        <div className="card form-card subscribe-card">
+          <h3>Welcome message sent</h3>
+          <p><strong>{justAddedName}</strong> will receive a WhatsApp message. You can now send reminders for the next 24 hours without them messaging first.</p>
+          <button type="button" className="btn btn-primary" onClick={() => navigate('/members')}>Done</button>
+        </div>
+      )}
+      {subscribeLink && (
+        <div className="card form-card subscribe-card">
+          <h3>WhatsApp subscribe</h3>
+          <p>Share this link with <strong>{justAddedName}</strong> so they can receive reminders. They need to send &quot;Hi&quot; first.</p>
+          <div className="subscribe-link-row">
+            <input type="text" readOnly value={subscribeLink} className="subscribe-link-input" />
+            <button type="button" className="btn btn-primary" onClick={() => { navigator.clipboard.writeText(subscribeLink); }}>Copy</button>
+          </div>
+          <button type="button" className="btn btn-secondary" onClick={() => { setSubscribeLink(null); navigate('/members'); }}>Done</button>
+        </div>
+      )}
     </div>
   );
 }

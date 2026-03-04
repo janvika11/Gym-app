@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { getMe } from './api';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -11,6 +11,8 @@ import PlanForm from './pages/PlanForm';
 import Fees from './pages/Fees';
 import Attendance from './pages/Attendance';
 import Reminders from './pages/Reminders';
+import Settings from './pages/Settings';
+import Signup from './pages/Signup';
 
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -52,9 +54,10 @@ export default function App() {
           <Route path="fees" element={<Fees />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="reminders" element={<Reminders />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

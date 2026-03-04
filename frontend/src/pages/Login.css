@@ -33,3 +33,16 @@
   padding: 0.65rem;
   margin-top: 0.25rem;
 }
+.login-footer {
+  margin: 1rem 0 0;
+  text-align: center;
+  color: #71717a;
+  font-size: 0.9rem;
+}
+.login-footer a {
+  color: #C6F135;
+  text-decoration: none;
+}
+.login-footer a:hover {
+  text-decoration: underline;
+}

@@ -8,6 +8,7 @@ const navItems = [
   { to: '/fees', label: 'Fees & Plans' },
   { to: '/reminders', label: 'WhatsApp' },
   { to: '/attendance', label: 'Attendance' },
+  { to: '/settings', label: 'Settings' },
 ];
 
 export default function Layout() {
