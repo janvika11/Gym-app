@@ -1,0 +1,136 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.dash-card {
+  background: rgba(24, 24, 27, 1);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(39, 39, 42, 1);
+  padding: 1rem 1.1rem;
+}
+
+.dash-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(161, 161, 170, 0.85);
+  margin-bottom: 0.35rem;
+}
+
+.dash-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.dash-sub {
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: rgba(161, 161, 170, 0.8);
+}
+
+.dash-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.2fr;
+  gap: 1rem;
+}
+
+.dash-panel {
+  background: rgba(24, 24, 27, 1);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(39, 39, 42, 1);
+  padding: 1.1rem 1.25rem;
+}
+
+.dash-panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin-bottom: 0.9rem;
+}
+
+.dash-peak-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 7rem;
+}
+
+.dash-peak-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dash-peak-bar {
+  width: 100%;
+  max-width: 2.1rem;
+  background: linear-gradient(180deg, #4b5563, #111827);
+  border-radius: 0.4rem 0.4rem 0.2rem 0.2rem;
+  min-height: 0.25rem;
+}
+
+.dash-peak-bar-active {
+  background: linear-gradient(180deg, #c6f135, #15803d);
+}
+
+.dash-peak-bar-faint {
+  opacity: 0.25;
+}
+
+.dash-peak-hour {
+  font-size: 0.6rem;
+  color: rgba(161, 161, 170, 0.8);
+}
+
+.dash-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dash-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(39, 39, 42, 0.8);
+}
+
+.dash-activity-item:last-child {
+  border-bottom: none;
+}
+
+.dash-activity-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+}
+
+.dash-activity-text {
+  flex: 1;
+  font-size: 0.8rem;
+  color: rgba(228, 228, 231, 0.9);
+}
+
+.dash-activity-time {
+  font-size: 0.7rem;
+  color: rgba(161, 161, 170, 0.85);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .dash-row {
+    grid-template-columns: 1fr;
+  }
+}
+

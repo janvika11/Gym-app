@@ -1,0 +1,25 @@
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.plan-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+.plan-meta {
+  color: #a78bfa;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+}
+.plan-desc {
+  color: #71717a;
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.4;
+}
+.plan-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}

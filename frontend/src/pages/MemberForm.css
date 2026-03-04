@@ -1,0 +1,7 @@
+.form-card { max-width: 560px; }
+.form-row { display: flex; gap: 1rem; }
+.form-row .form-group { flex: 1; }
+.form-check label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.form-check input { width: auto; }
+.form-error { color: #f87171; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.form-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
