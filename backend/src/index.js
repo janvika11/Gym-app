@@ -15,6 +15,7 @@ import remindersRoutes from './routes/reminders.js';
 import statsRoutes from './routes/stats.js';
 import attendanceRoutes from './routes/attendance.js';
 import configRoutes from './routes/config.js';
+import settingsRoutes from './routes/settings.js';
 
 await connectDB();
 
