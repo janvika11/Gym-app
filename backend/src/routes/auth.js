@@ -3,7 +3,14 @@ import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin.js';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
+import Plan from '../models/Plan.js';
 import { authMiddleware } from '../middleware/auth.js';
+
+const DEFAULT_PLANS = [
+  { name: 'Basic', durationDays: 30, price: 1500, description: 'Gym floor access, locker room, water cooler', active: true },
+  { name: 'Premium', durationDays: 30, price: 2500, description: 'Everything in Basic plus group classes and diet plan', active: true },
+  { name: 'Gold', durationDays: 30, price: 3500, description: 'Premium plus personal trainer and sauna access', active: true },
+];
 
 const router = express.Router();
 
@@ -19,6 +26,9 @@ router.post('/signup', async (req, res) => {
     }
     const gym = await Gym.create({ name: gymName });
     await GymSettings.create({ gym: gym._id });
+    for (const def of DEFAULT_PLANS) {
+      await Plan.create({ ...def, gym: gym._id });
+    }
     const admin = await Admin.create({
       gym: gym._id,
       email,
