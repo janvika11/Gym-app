@@ -3,23 +3,64 @@
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
 }
-.plan-card h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1.1rem;
+
+.plans-grid-fees-style {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
 }
-.plan-meta {
-  color: #a78bfa;
-  font-size: 0.9rem;
-  margin: 0 0 0.5rem;
+
+.plan-card-fees {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
 }
-.plan-desc {
-  color: #71717a;
-  font-size: 0.85rem;
-  margin: 0 0 0.75rem;
-  line-height: 1.4;
+
+.plan-card-fees-circle {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
 }
-.plan-actions {
+
+.plan-card-fees-name {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.plan-card-fees-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'DM Sans', 'Outfit', sans-serif;
+}
+
+.plan-card-fees-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.plan-card-fees-features {
+  margin-top: 16px;
+}
+
+.plan-card-fees-feature {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.plan-card-fees-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
 }
