@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAttendanceTodayHours } from '../api';
+import { getStats, getAttendanceTodayHours } from '../api';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -12,13 +12,10 @@ export default function Dashboard() {
     async function load() {
       try {
         setError('');
-        const [statsRes, peakRes] = await Promise.all([
-          fetch('/api/stats'),
+        const [statsJson, peakRes] = await Promise.all([
+          getStats(),
           getAttendanceTodayHours().catch(() => ({})),
         ]);
-        const statsJson = await statsRes.json();
-        if (!statsRes.ok)
-          throw new Error(statsJson.message || 'Failed to load stats');
         setData(statsJson);
         setPeak(peakRes || {});
       } catch (e) {

@@ -162,6 +162,13 @@ export async function getAttendanceToday() {
   return data;
 }
 
+export async function getStats() {
+  const res = await fetch(`${API_BASE}/stats`, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to fetch stats');
+  return data;
+}
+
 export async function getAttendanceTodayHours() {
   const res = await fetch(`${API_BASE}/attendance/today-hours`, {
     headers: headers(),
