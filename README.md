@@ -44,16 +44,6 @@ npm run dev
 
 App runs at **http://localhost:3000**. Vite proxies `/api` to the backend.
 
-### 3. WhatsApp (optional)
-
-1. Create a Meta app and add WhatsApp: [developers.facebook.com](https://developers.facebook.com).
-2. In WhatsApp → API Setup, copy **Phone number ID** and **Access token**.
-3. Add to `backend/.env`:
-
-```env
-META_WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-META_WHATSAPP_ACCESS_TOKEN=your_access_token
-```
 
 Restart the backend. Use **WhatsApp Reminders** in the app to send messages. Phone numbers are normalized (e.g. 10-digit Indian numbers get `91` prefix).
 
