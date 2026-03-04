@@ -11,6 +11,17 @@ function headers() {
   return h;
 }
 
+export async function signup(gymName, email, password, name) {
+  const res = await fetch(`${API_BASE}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ gymName, email, password, name }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Signup failed');
+  return data;
+}
+
 export async function login(email, password) {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
