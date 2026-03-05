@@ -8,8 +8,12 @@ Web app for gym admin: **admin login**, **members CRUD**, **configurable plans**
 |---|-----|
 | **Frontend (Vercel)** | https://your-app.vercel.app |
 | **Backend API (Render)** | https://gym-app-2muj.onrender.com |
+| **Privacy Policy** | https://your-app.vercel.app/#/privacy |
+| **Terms of Service** | https://your-app.vercel.app/#/terms |
 
 *(Replace `your-app` with your actual Vercel project name.)*
+
+**Meta Live mode:** See [LIVEMODE.md](./LIVEMODE.md) for the checklist to switch your WhatsApp app to Live.
 
 ## Features
 

@@ -1,11 +1,12 @@
 import express from 'express';
 import Member from '../models/Member.js';
 import ReminderLog from '../models/ReminderLog.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authGym } from '../middleware/authGym.js';
+import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
 import { sendReminder } from '../services/whatsapp/index.js';
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authGym);
 
 function renderBodyTemplate(template, member) {
   if (!template) return '';
@@ -47,7 +48,9 @@ router.post('/send', async (req, res) => {
 
     const result = await sendReminder(to, title, personalizedBody);
 
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
     await ReminderLog.create({
+      gym: gymId,
       member: member._id,
       memberName: member.name,
       phone: member.phone,
@@ -85,7 +88,7 @@ router.post('/send-bulk', async (req, res) => {
 
     for (let i = 0; i < memberIds.length; i += BATCH_SIZE) {
       const batchIds = memberIds.slice(i, i + BATCH_SIZE);
-      const gymId = req.admin?.gym?._id || req.admin?.gym;
+      const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
       const memberFilter = gymFilter(req.admin);
       const batchPromises = batchIds.map(async (memberId) => {
         const filter = { _id: memberId, ...memberFilter };
@@ -112,6 +115,7 @@ router.post('/send-bulk', async (req, res) => {
         const result = await sendReminder(to, title, personalizedBody);
 
         await ReminderLog.create({
+          gym: gymId,
           member: member._id,
           memberName: member.name,
           phone: member.phone,
@@ -154,7 +158,7 @@ router.get('/logs', async (req, res) => {
       parseInt(req.query.limit, 10) || 20,
       100
     );
-    const filter = gymFilter(req.admin);
+    const filter = gymFilterFromId(req.gymId) || gymFilter(req.admin);
 
     const logs = await ReminderLog.find(filter)
       .sort({ createdAt: -1 })

@@ -13,6 +13,8 @@ import Attendance from './pages/Attendance';
 import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
 import Signup from './pages/Signup';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route
           path="/"
           element={

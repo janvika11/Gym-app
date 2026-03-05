@@ -1,19 +1,31 @@
 import express from 'express';
 import GymSettings from '../models/GymSettings.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authGym } from '../middleware/authGym.js';
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authGym);
+
+function parseTemplatesJson(str) {
+  try {
+    const arr = JSON.parse(String(str || '[]'));
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
 
 router.get('/', async (req, res) => {
   try {
-    const gymId = req.admin?.gym?._id || req.admin?.gym;
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
     if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
-    let settings = await GymSettings.findOne({ gym: gymId });
-    if (!settings) {
-      settings = await GymSettings.create({ gym: gymId });
+    let doc = await GymSettings.findOne({ gym: gymId });
+    if (!doc) {
+      doc = await GymSettings.create({ gym: gymId });
     }
-    res.json(settings);
+    const out = doc.toObject ? doc.toObject() : { ...doc };
+    out.customTemplates = parseTemplatesJson(out.customTemplatesJson);
+    delete out.customTemplatesJson;
+    res.json(out);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -21,21 +33,46 @@ router.get('/', async (req, res) => {
 
 router.put('/', async (req, res) => {
   try {
-    const gymId = req.admin?.gym?._id || req.admin?.gym;
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
     if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
-    const { welcomeMessage, feeReminderMessage, overdueMessage, expiringMessage, inactiveMessage } = req.body;
+    const {
+      welcomeTitle, welcomeMessage,
+      feeReminderTitle, feeReminderMessage,
+      overdueTitle, overdueMessage,
+      expiringTitle, expiringMessage,
+      inactiveTitle, inactiveMessage,
+      customTemplates,
+    } = req.body;
+
+    const $set = {};
+    const fields = [
+      'welcomeTitle', 'welcomeMessage', 'feeReminderTitle', 'feeReminderMessage',
+      'overdueTitle', 'overdueMessage', 'expiringTitle', 'expiringMessage',
+      'inactiveTitle', 'inactiveMessage',
+    ];
+    for (const f of fields) {
+      if (req.body[f] !== undefined) $set[f] = req.body[f];
+    }
+
+    const normalized = Array.isArray(customTemplates)
+      ? customTemplates.map((t, i) => ({
+          key: t && t.key ? String(t.key) : `custom_${Date.now()}_${i}`,
+          title: t && t.title != null ? String(t.title) : '',
+          message: t && t.message != null ? String(t.message) : '',
+        }))
+      : [];
+    $set.customTemplatesJson = JSON.stringify(normalized);
+
     const settings = await GymSettings.findOneAndUpdate(
       { gym: gymId },
-      {
-        ...(welcomeMessage !== undefined && { welcomeMessage }),
-        ...(feeReminderMessage !== undefined && { feeReminderMessage }),
-        ...(overdueMessage !== undefined && { overdueMessage }),
-        ...(expiringMessage !== undefined && { expiringMessage }),
-        ...(inactiveMessage !== undefined && { inactiveMessage }),
-      },
-      { new: true, upsert: true }
+      { $set },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
     );
-    res.json(settings);
+
+    const out = settings.toObject ? settings.toObject() : { ...settings };
+    out.customTemplates = parseTemplatesJson(out.customTemplatesJson);
+    delete out.customTemplatesJson;
+    res.json(out);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const memberSchema = new mongoose.Schema(
   {
-    gym: { type: mongoose.Schema.Types.ObjectId, ref: 'Gym' },
+    gym: { type: mongoose.Schema.Types.ObjectId, ref: 'Gym', required: true },
     name: { type: String, required: true },
     email: { type: String },
     phone: { type: String, required: true },
@@ -17,6 +17,8 @@ const memberSchema = new mongoose.Schema(
     active: { type: Boolean, default: true },
     lastCheckInAt: { type: Date },
     notes: { type: String },
+    welcomeSent: { type: Boolean },
+    welcomeError: { type: String },
   },
   { timestamps: true }
 );

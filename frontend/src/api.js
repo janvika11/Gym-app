@@ -1,4 +1,4 @@
-const API_BASE ='https://gym-app-2muj.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gym-app-2muj.onrender.com/api';
 
 function getToken() {
   return localStorage.getItem('token');
@@ -83,6 +83,16 @@ export async function deleteMember(id) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Failed to delete member');
+  return data;
+}
+
+export async function sendMemberReminder(memberId) {
+  const res = await fetch(`${API_BASE}/members/${memberId}/remind`, {
+    method: 'POST',
+    headers: headers(),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to send reminder');
   return data;
 }
 
@@ -213,7 +223,13 @@ export async function sendBulkReminders(memberIds, title, body) {
 
 export async function getSettings() {
   const res = await fetch(`${API_BASE}/settings`, { headers: headers() });
-  const data = await res.json();
+  const text = await res.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(res.ok ? 'Invalid response' : `Server error (${res.status}). Try again.`);
+  }
   if (!res.ok) throw new Error(data.message || 'Failed to fetch settings');
   return data;
 }
@@ -224,7 +240,13 @@ export async function updateSettings(body) {
     headers: headers(),
     body: JSON.stringify(body),
   });
-  const data = await res.json();
+  const text = await res.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(res.ok ? 'Invalid response' : `Server error (${res.status}). Try again.`);
+  }
   if (!res.ok) throw new Error(data.message || 'Failed to update settings');
   return data;
 }
@@ -233,6 +255,45 @@ export async function getWhatsAppSubscribeLink() {
   const res = await fetch(`${API_BASE}/config/whatsapp-link`, { headers: headers() });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Failed to fetch');
+  return data;
+}
+
+export async function getTemplates() {
+  const res = await fetch(`${API_BASE}/templates`, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to fetch templates');
+  return data;
+}
+
+export async function createTemplate(body) {
+  const res = await fetch(`${API_BASE}/templates`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to create template');
+  return data;
+}
+
+export async function updateTemplate(id, body) {
+  const res = await fetch(`${API_BASE}/templates/${id}`, {
+    method: 'PUT',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to update template');
+  return data;
+}
+
+export async function deleteTemplate(id) {
+  const res = await fetch(`${API_BASE}/templates/${id}`, {
+    method: 'DELETE',
+    headers: headers(),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to delete template');
   return data;
 }
 

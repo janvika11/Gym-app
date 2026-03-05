@@ -1,53 +1,81 @@
 import { useEffect, useState } from 'react';
-import { getPlans } from '../api';
-
-const PAYMENTS = [
-  { id: 1, member: 'Rahul Sharma', amount: 2500, date: '2026-02-15', method: 'UPI', status: 'paid' },
-  { id: 2, member: 'Priya Patel', amount: 1500, date: '2026-02-28', method: 'Cash', status: 'paid' },
-  { id: 3, member: 'Sneha Reddy', amount: 3500, date: '2026-02-20', method: 'Card', status: 'paid' },
-  { id: 4, member: 'Amit Kumar', amount: 2500, date: '2026-01-10', method: 'UPI', status: 'pending' },
-  { id: 5, member: 'Neha Gupta', amount: 3500, date: '2026-02-12', method: 'UPI', status: 'paid' },
-  { id: 6, member: 'Arjun Mehta', amount: 2500, date: '2026-01-28', method: 'Cash', status: 'pending' },
-  { id: 7, member: 'Kavita Nair', amount: 1500, date: '2026-02-01', method: 'Card', status: 'paid' },
-];
+import { Link } from 'react-router-dom';
+import { getPlans, getStats, getMembers } from '../api';
 
 export default function Fees() {
   const [tab, setTab] = useState('all');
   const [plans, setPlans] = useState([]);
+  const [stats, setStats] = useState({ totalRevenue: 0, pendingDues: 0 });
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     getPlans()
       .then(setPlans)
       .catch(() => setPlans([]));
+    getStats()
+      .then((s) => setStats({ totalRevenue: s.totalRevenue || 0, pendingDues: s.pendingDues || 0 }))
+      .catch(() => {});
+    getMembers()
+      .then(setMembers)
+      .catch(() => setMembers([]));
   }, []);
 
   const colors = ['#64B5F6', '#C6F135', '#FFD740', '#A855F7'];
-  const featureMap = {
-    Basic: [
-      'Gym floor access',
-      'Locker room',
-      'Water cooler',
-    ],
-    Premium: [
-      'Everything in Basic',
-      'Group classes',
-      'Diet plan',
-      'Personal locker',
-    ],
-    Gold: [
-      'Everything in Premium',
-      'Personal trainer',
-      'Sauna & steam',
-      'Supplement discount',
-    ],
+  const getFeatures = (p) => {
+    if (p.description) {
+      return p.description.split(/[,;]|\n/).map((s) => s.trim()).filter(Boolean);
+    }
+    return [
+      `${p.durationDays || 0} days access`,
+      `₹${(p.price ?? 0).toLocaleString('en-IN')}`,
+    ];
   };
 
-  const filteredPayments = tab === 'all' ? PAYMENTS : PAYMENTS.filter((p) => p.status === tab);
-  const totalPaid = PAYMENTS.filter((p) => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
-  const totalPending = PAYMENTS.filter((p) => p.status === 'pending').reduce((s, p) => s + p.amount, 0);
+  const getMemberStatus = (m) => {
+    if (!m.plan) return null;
+    if (m.paymentStatus === 'paid') return 'paid';
+    if (m.paymentStatus === 'overdue' || (m.endDate && new Date(m.endDate) < new Date())) return 'pending';
+    return m.paymentStatus === 'pending' ? 'pending' : 'paid';
+  };
+
+  const membersWithPlans = members.filter((m) => m.plan);
+  const payments = membersWithPlans.map((m) => ({
+    id: m._id,
+    member: m.name,
+    amount: m.plan?.price || 0,
+    status: getMemberStatus(m),
+  })).filter((p) => p.status);
+
+  const filteredPayments = tab === 'all' ? payments : payments.filter((p) => p.status === tab);
+  const totalPaid = stats.totalRevenue;
+  const totalPending = stats.pendingDues;
 
   return (
     <div>
+      <div
+        className="page-header"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
+        <h1 style={{ margin: 0 }}>Fees & Plans</h1>
+        <Link
+          to="/plans"
+          className="btn btn-primary"
+          style={{
+            flexShrink: 0,
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}
+        >
+          Manage plans (Add / Edit)
+        </Link>
+      </div>
       <div
         style={{
           display: 'grid',
@@ -58,13 +86,7 @@ export default function Fees() {
       >
         {plans.map((p, idx) => {
           const color = colors[idx % colors.length];
-          const uiFeatures =
-            featureMap[p.name] ||
-            [
-              `${p.durationDays || 0} days access`,
-              `₹${p.price?.toLocaleString?.() ?? p.price}`,
-              p.description || 'Custom gym plan',
-            ];
+          const uiFeatures = getFeatures(p);
           return (
           <div
             key={p._id}
@@ -269,65 +291,47 @@ export default function Fees() {
           </div>
         </div>
 
-        {filteredPayments.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1.5fr 1fr 1fr 1fr',
-              alignItems: 'center',
-              gap: 12,
-              padding: '14px 20px',
-              borderBottom: '1px solid rgba(39,39,42,0.7)',
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 600,
-                fontSize: 14,
-                color: '#fff',
-              }}
-            >
-              {p.member}
-            </div>
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: '#fff',
-              }}
-            >
-              ₹{p.amount.toLocaleString()}
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: 'rgba(255,255,255,0.5)',
-              }}
-            >
-              {p.date} · {p.method}
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <span
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: 8,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  background:
-                    p.status === 'paid'
-                      ? 'rgba(0,230,118,0.1)'
-                      : 'rgba(255,215,64,0.1)',
-                  color:
-                    p.status === 'paid' ? '#00E676' : '#FFD740',
-                }}
-              >
-                {p.status}
-              </span>
-            </div>
+        {filteredPayments.length === 0 ? (
+          <div style={{ padding: 32, textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 14 }}>
+            No payment records yet. Add members with plans to see fee status here.
           </div>
-        ))}
+        ) : (
+          filteredPayments.map((p) => (
+            <div
+              key={p.id}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.5fr 1fr 1fr',
+                alignItems: 'center',
+                gap: 12,
+                padding: '14px 20px',
+                borderBottom: '1px solid rgba(39,39,42,0.7)',
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#fff' }}>
+                {p.member}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>
+                ₹{(p.amount || 0).toLocaleString('en-IN')}
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    background: p.status === 'paid' ? 'rgba(0,230,118,0.1)' : 'rgba(255,215,64,0.1)',
+                    color: p.status === 'paid' ? '#00E676' : '#FFD740',
+                  }}
+                >
+                  {p.status}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

@@ -3,14 +3,7 @@ import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin.js';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
-import Plan from '../models/Plan.js';
-import { authMiddleware } from '../middleware/auth.js';
-
-const DEFAULT_PLANS = [
-  { name: 'Basic', durationDays: 30, price: 1500, description: 'Gym floor access, locker room, water cooler', active: true },
-  { name: 'Premium', durationDays: 30, price: 2500, description: 'Everything in Basic plus group classes and diet plan', active: true },
-  { name: 'Gold', durationDays: 30, price: 3500, description: 'Premium plus personal trainer and sauna access', active: true },
-];
+import { authGym } from '../middleware/authGym.js';
 
 const router = express.Router();
 
@@ -20,29 +13,22 @@ router.post('/signup', async (req, res) => {
     if (!gymName || !email || !password) {
       return res.status(400).json({ message: 'Gym name, email and password required' });
     }
-    const exists = await Admin.findOne({ email });
-    if (exists) {
+    const adminExists = await Admin.findOne({ email });
+    const gymExists = await Gym.findOne({ email });
+    if (adminExists || gymExists) {
       return res.status(400).json({ message: 'Email already registered' });
     }
-    const gym = await Gym.create({ name: gymName });
-    await GymSettings.create({ gym: gym._id });
-    for (const def of DEFAULT_PLANS) {
-      await Plan.create({ ...def, gym: gym._id });
-    }
-    const admin = await Admin.create({
-      gym: gym._id,
+    const gym = await Gym.create({
+      name: gymName,
       email,
       password,
-      name: name || 'Admin',
+      welcomeMessage: 'Hi {name}, welcome to {gym}! 💪',
     });
-    const token = jwt.sign(
-      { id: admin._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    await GymSettings.create({ gym: gym._id });
+    const token = jwt.sign({ gymId: gym._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({
       token,
-      admin: { id: admin._id, email: admin.email, name: admin.name, gym: { id: gym._id, name: gym.name } },
+      admin: { id: gym._id, email: gym.email, name: gym.name, gym: { id: gym._id, name: gym.name } },
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -56,29 +42,48 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password required' });
     }
     const admin = await Admin.findOne({ email }).populate('gym');
-    if (!admin || !(await admin.comparePassword(password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    if (admin && (await admin.comparePassword(password))) {
+      const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      return res.json({
+        token,
+        admin: {
+          id: admin._id,
+          email: admin.email,
+          name: admin.name,
+          gym: admin.gym ? { id: admin.gym._id, name: admin.gym.name } : null,
+        },
+      });
     }
-    const token = jwt.sign(
-      { id: admin._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    res.json({
-      token,
-      admin: {
-        id: admin._id,
-        email: admin.email,
-        name: admin.name,
-        gym: admin.gym ? { id: admin.gym._id, name: admin.gym.name } : null,
-      },
-    });
+    const gym = await Gym.findOne({ email });
+    if (gym && (await gym.comparePassword(password))) {
+      const token = jwt.sign({ gymId: gym._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      return res.json({
+        token,
+        admin: {
+          id: gym._id,
+          email: gym.email,
+          name: gym.name,
+          gym: { id: gym._id, name: gym.name },
+        },
+      });
+    }
+    return res.status(401).json({ message: 'Invalid email or password' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-router.get('/me', authMiddleware, (req, res) => {
+router.get('/me', authGym, (req, res) => {
+  if (req.gym && !req.admin) {
+    return res.json({
+      admin: {
+        id: req.gym._id,
+        email: req.gym.email,
+        name: req.gym.name,
+        gym: { id: req.gym._id, name: req.gym.name },
+      },
+    });
+  }
   res.json({ admin: req.admin });
 });
 

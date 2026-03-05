@@ -1,11 +1,11 @@
 import express from 'express';
 import AttendanceLog from '../models/AttendanceLog.js';
 import Member from '../models/Member.js';
-import { authMiddleware } from '../middleware/auth.js';
-import { gymFilter } from '../utils/gymFilter.js';
+import { authGym } from '../middleware/authGym.js';
+import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authGym);
 
 function normalizeDate(date) {
   const d = date ? new Date(date) : new Date();
@@ -64,7 +64,7 @@ router.get('/month', async (req, res) => {
 
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 1);
-    const filter = gymFilter(req.admin);
+    const filter = gymFilterFromId(req.gymId) || gymFilter(req.admin);
     const memberIds = filter.gym ? (await Member.find(filter).select('_id')).map((m) => m._id) : null;
 
     const logs = await AttendanceLog.aggregate([
@@ -116,7 +116,7 @@ router.get('/today-hours', async (req, res) => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    const filter = gymFilter(req.admin);
+    const filter = gymFilterFromId(req.gymId) || gymFilter(req.admin);
     const memberIds = filter.gym ? (await Member.find(filter).select('_id')).map((m) => m._id) : null;
 
     const match = { createdAt: { $gte: start, $lt: end } };

@@ -11,3 +11,34 @@
   font-family: inherit;
   resize: vertical;
 }
+.settings-template-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+.settings-custom-row {
+  position: relative;
+  padding-right: 5rem;
+}
+.settings-remove-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+}
+.settings-actions {
+  margin-bottom: 1rem;
+}
+
+.settings-card input,
+.settings-card textarea {
+  cursor: text;
+  -webkit-user-select: text;
+  user-select: text;
+}.settings-success {
+  color: #00E676;
+  margin-bottom: 0.5rem;
+}

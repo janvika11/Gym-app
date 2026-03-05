@@ -8,22 +8,34 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [peak, setPeak] = useState(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        setError('');
-        const [statsJson, peakRes] = await Promise.all([
-          getStats(),
-          getAttendanceTodayHours().catch(() => ({})),
-        ]);
-        setData(statsJson);
-        setPeak(peakRes || {});
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [statsResult, peakResult] = await Promise.allSettled([
+        getStats(),
+        getAttendanceTodayHours(),
+      ]);
+      const statsJson = statsResult.status === 'fulfilled' ? statsResult.value : null;
+      const peakRes = peakResult.status === 'fulfilled' ? peakResult.value : {};
+      if (!statsJson) {
+        const msg = statsResult.reason?.message || 'Failed to load';
+        throw new Error(
+          msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')
+            ? 'Could not connect to server. Please check your connection and try again.'
+            : msg
+        );
       }
+      setData(statsJson);
+      setPeak(peakRes || {});
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     load();
   }, []);
 
@@ -71,7 +83,14 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      {error && <p className="page-message error">{error}</p>}
+      {error && (
+        <p className="page-message error">
+          {error}
+          <button type="button" className="btn btn-secondary" onClick={load} style={{ marginLeft: '0.5rem' }}>
+            Retry
+          </button>
+        </p>
+      )}
       {loading && !error && (
         <p className="page-message">Loading dashboard...</p>
       )}

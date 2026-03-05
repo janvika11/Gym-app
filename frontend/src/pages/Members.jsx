@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getMembers, deleteMember, sendReminder } from '../api';
+import { getMembers, deleteMember, sendReminder, sendMemberReminder } from '../api';
 import './Members.css';
 
 export default function Members() {
@@ -10,6 +10,7 @@ export default function Members() {
   const [deleting, setDeleting] = useState(null);
   const [selected, setSelected] = useState(null);
   const [sending, setSending] = useState(false);
+  const [reminding, setReminding] = useState(null);
   const [reminderMsg, setReminderMsg] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -158,6 +159,17 @@ export default function Members() {
                     </span>
                   </td>
                   <td className="actions" onClick={(e) => e.stopPropagation()}>
+                    {m.phone && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        onClick={(e) => handleSendExpiryReminder(m, e)}
+                        disabled={reminding === m._id}
+                        title="Send expiry reminder via WhatsApp"
+                      >
+                        {reminding === m._id ? '...' : 'Remind'}
+                      </button>
+                    )}
                     <Link to={`/members/${m._id}/edit`} className="btn btn-sm btn-secondary">Edit</Link>
                     <button
                       type="button"

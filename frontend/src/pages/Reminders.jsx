@@ -52,10 +52,20 @@ export default function Reminders() {
         if (s) {
           const merged = {
             ...DEFAULT_TEMPLATES,
-            fee_reminder: { title: 'Fee reminder', body: s.feeReminderMessage || DEFAULT_TEMPLATES.fee_reminder.body },
-            expired: { title: 'Membership expired', body: s.overdueMessage || DEFAULT_TEMPLATES.expired.body },
-            attendance: { title: 'Attendance reminder', body: s.inactiveMessage || DEFAULT_TEMPLATES.attendance.body },
+            fee_reminder: { title: s.feeReminderTitle || 'Fee reminder', body: s.feeReminderMessage || DEFAULT_TEMPLATES.fee_reminder.body },
+            expired: { title: s.overdueTitle || 'Membership expired', body: s.overdueMessage || DEFAULT_TEMPLATES.expired.body },
+            attendance: { title: s.inactiveTitle || 'Attendance reminder', body: s.inactiveMessage || DEFAULT_TEMPLATES.attendance.body },
           };
+          let customList = s.customTemplates;
+          if (!Array.isArray(customList) && s.customTemplatesJson) {
+            try { customList = JSON.parse(s.customTemplatesJson); } catch { customList = []; }
+          }
+          (customList || []).forEach((t, i) => {
+            if (t && (t.key || t.title || t.message)) {
+              const k = t.key || `custom_${Date.now()}_${i}`;
+              merged[k] = { title: t.title || 'Custom template', body: t.message || '' };
+            }
+          });
           setTemplates(merged);
           setOverdueBody(s.overdueMessage || DEFAULT_TEMPLATES.expired.body);
           setExpiringBody(s.expiringMessage || 'Hi {name}! Your membership is expiring soon. Renew now to keep your progress going. 🏋️');
@@ -394,10 +404,15 @@ export default function Reminders() {
                 value={templateKey}
                 onChange={handleTemplateChange}
               >
-                <option value="fee_reminder">fee_reminder</option>
-                <option value="expired">expired</option>
-                <option value="attendance">attendance</option>
-                <option value="custom">custom</option>
+                <option value="fee_reminder">Fee reminder</option>
+                <option value="expired">Membership expired</option>
+                <option value="attendance">Attendance reminder</option>
+                {Object.entries(templates)
+                  .filter(([k]) => k.startsWith('custom_'))
+                  .map(([k, t]) => (
+                    <option key={k} value={k}>{t?.title || 'Custom template'}</option>
+                  ))}
+                <option value="custom">Custom message (write your own)</option>
               </select>
             </div>
 

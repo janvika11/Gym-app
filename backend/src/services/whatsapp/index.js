@@ -94,19 +94,62 @@ export async function sendReminder(to, title, body) {
 }
 
 /**
- * Send welcome template (for new members – no 24hr rule)
- * Set META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_welcome and create in Meta:
- * Body: "Hi {{1}}, welcome to our gym! We're excited to have you. 💪"
- * If not set, uses hello_world (generic, no name).
+ * Send welcome template (for new members – no 24hr rule, no reply needed)
+ * Uses custom message from settings. For initiation you MUST use an approved template.
+ *
+ * Option A – Custom template (recommended): Create in Meta Business Manager:
+ *   Name: gym_welcome
+ *   Category: UTILITY or MARKETING
+ *   Body: {{1}}
+ *   (One parameter = full message)
+ * Set META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_welcome
+ *
+ * Option B – hello_world: Uses Meta's default test message (not recommended).
  */
 export async function sendWelcomeTemplate(to, memberName) {
-  const templateName = process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'hello_world';
+  return sendWelcomeMessage(to, memberName, null);
+}
+
+/**
+ * Send welcome message to new member. Uses custom message from settings.
+ * Production: Uses gym_dynamic_message ({{1}}) – no "Hi" needed from member.
+ * @param {string} to - Phone number
+ * @param {string} memberName - Member's name
+ * @param {string|null} customMessage - From GymSettings.welcomeMessage, or null to use default
+ * @param {string} [gymName] - Gym name for {gym} placeholder
+ */
+export async function sendWelcomeMessage(to, memberName, customMessage, gymName = '') {
+  const defaultMsg = "Hi {name}, welcome to {gym}! We're excited to have you. 💪";
+  const msg = (customMessage || defaultMsg)
+    .replaceAll('{name}', memberName || '')
+    .replaceAll('{gym}', gymName || 'our gym')
+    .replaceAll('{fee}', '')
+    .replaceAll('{date}', '');
+
+  const templateName = process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME
+    || process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME
+    || 'gym_dynamic_message';
+
+  if (templateName === 'hello_world') {
+    return sendTemplate(to, 'hello_world', 'en_US', []);
+  }
+
+  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US', [
+    { type: 'body', parameters: [{ type: 'text', text: msg }] },
+  ]);
+}
+
+/**
+ * Send dynamic message via approved template with single {{1}} body parameter.
+ * Use for: welcome, expiry reminders, custom messages.
+ * gym_dynamic_message template in Meta: Body: {{1}}
+ */
+export async function sendDynamicMessage(to, composedMessage) {
+  const templateName = process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'gym_dynamic_message';
   const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US';
-  const components =
-    templateName !== 'hello_world' && memberName
-      ? [{ type: 'body', parameters: [{ type: 'text', text: String(memberName) }] }]
-      : [];
-  return sendTemplate(to, templateName, lang, components);
+  return sendTemplate(to, templateName, lang, [
+    { type: 'body', parameters: [{ type: 'text', text: String(composedMessage || '') }] },
+  ]);
 }
 
 export default {
@@ -116,4 +159,5 @@ export default {
   sendTemplate,
   sendReminder,
   sendWelcomeTemplate,
+  sendWelcomeMessage,
 };

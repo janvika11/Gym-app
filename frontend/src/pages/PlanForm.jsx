@@ -23,7 +23,7 @@ export default function PlanForm() {
       .then((p) => setForm({
         name: p.name || '',
         durationDays: p.durationDays ?? 30,
-        price: p.price ?? 0,
+        price: p.price != null ? String(p.price) : '',
         description: p.description || '',
         active: p.active !== false,
       }))
@@ -32,10 +32,26 @@ export default function PlanForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({
-      ...f,
-      [name]: type === 'checkbox' ? checked : (name === 'durationDays' || name === 'price' ? Number(value) : value),
-    }));
+    if (type === 'checkbox') {
+      setForm((f) => ({ ...f, [name]: checked }));
+      return;
+    }
+    if (name === 'price') {
+      // Keep as string while typing; strip leading zeros to avoid "04000"
+      let cleaned = value.replace(/[^\d.]/g, '');
+      cleaned = cleaned.replace(/^0+(?=\d)/, '').replace(/^0+\./, '0.'); // 04000->4000, 00.5->0.5
+      const parts = cleaned.split('.');
+      const normalized = parts.length > 1
+        ? (parts[0] || '0') + '.' + parts.slice(1).join('').slice(0, 2)
+        : (cleaned || '');
+      setForm((f) => ({ ...f, [name]: normalized }));
+      return;
+    }
+    if (name === 'durationDays') {
+      setForm((f) => ({ ...f, [name]: value === '' ? '' : Math.max(0, parseInt(value, 10) || 0) }));
+      return;
+    }
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +91,7 @@ export default function PlanForm() {
             </div>
             <div className="form-group">
               <label>Price (₹) *</label>
-              <input type="number" name="price" min={0} value={form.price} onChange={handleChange} />
+              <input type="text" inputMode="decimal" name="price" value={form.price} onChange={handleChange} placeholder="0" required />
             </div>
           </div>
           <div className="form-group">

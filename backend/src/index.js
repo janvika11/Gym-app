@@ -16,6 +16,9 @@ import statsRoutes from './routes/stats.js';
 import attendanceRoutes from './routes/attendance.js';
 import configRoutes from './routes/config.js';
 import settingsRoutes from './routes/settings.js';
+import templatesRoutes from './routes/templates.js';
+import gymAuthRoutes from './routes/gymAuth.js';
+import { startExpiryCron } from './cron/expiryReminder.js';
 
 await connectDB();
 
@@ -38,6 +41,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/gyms', gymAuthRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/plans', plansRoutes);
 app.use('/api/reminders', remindersRoutes);
@@ -45,8 +49,11 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/config', configRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/templates', templatesRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+startExpiryCron();
 
 // Seed default admin if env set and no admin exists
 async function seedAdmin() {
@@ -62,27 +69,6 @@ async function seedAdmin() {
   }
 }
 await seedAdmin();
-
-// Seed default plans per gym (Basic / Premium / Gold)
-async function seedPlans() {
-  const gyms = await Gym.find();
-  const defaults = [
-    { name: 'Basic', durationDays: 30, price: 1500, description: 'Gym floor access, locker room, water cooler', active: true },
-    { name: 'Premium', durationDays: 30, price: 2500, description: 'Everything in Basic plus group classes and diet plan', active: true },
-    { name: 'Gold', durationDays: 30, price: 3500, description: 'Premium plus personal trainer and sauna access', active: true },
-  ];
-  for (const gym of gyms) {
-    await Plan.deleteMany({ gym: gym._id, name: /monthly/i });
-    for (const def of defaults) {
-      await Plan.findOneAndUpdate(
-        { gym: gym._id, name: def.name },
-        { $set: { ...def, gym: gym._id } },
-        { upsert: true, new: true }
-      );
-    }
-  }
-}
-await seedPlans();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

@@ -2,15 +2,15 @@ import express from 'express';
 import Member from '../models/Member.js';
 import Plan from '../models/Plan.js';
 import ReminderLog from '../models/ReminderLog.js';
-import { authMiddleware } from '../middleware/auth.js';
-import { gymFilter } from '../utils/gymFilter.js';
+import { authGym } from '../middleware/authGym.js';
+import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authGym);
 
 router.get('/', async (req, res) => {
   try {
-    const filter = gymFilter(req.admin);
+    const filter = gymFilterFromId(req.gymId) || gymFilter(req.admin);
     const members = await Member.find(filter).populate('plan');
 
     const activeMembers = members.filter((m) => m.active !== false).length;
