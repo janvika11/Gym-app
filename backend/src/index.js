@@ -37,7 +37,22 @@ async function migrateGyms() {
 await migrateGyms();
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: (origin, cb) => {
+    const allowed = [
+      'https://gym-app-three-mu.vercel.app',
+      'https://gym-app-git-main-janvikas-projects.vercel.app',
+      'https://gym-9hchqucxa-janvikas-projects.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ];
+    const ok = !origin || allowed.includes(origin) || origin.endsWith('.vercel.app');
+    cb(null, ok);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
