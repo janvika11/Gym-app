@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gym-app-2muj.onrender.com/api';
+const PRODUCTION_API = 'https://gym-app-2muj.onrender.com/api';
+const isLocalhost = typeof window !== 'undefined' && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+const API_BASE = isLocalhost ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api') : PRODUCTION_API;
 
 function getToken() {
   return localStorage.getItem('token');
