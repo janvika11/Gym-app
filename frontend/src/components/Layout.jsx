@@ -60,9 +60,6 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-        <button type="button" className="sidebar-logout" onClick={logout}>
-          Logout
-        </button>
       </aside>
 
       <main className="main">

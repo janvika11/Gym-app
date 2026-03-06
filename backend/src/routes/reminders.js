@@ -1,5 +1,6 @@
 import express from 'express';
 import Member from '../models/Member.js';
+import Gym from '../models/Gym.js';
 import ReminderLog from '../models/ReminderLog.js';
 import { authGym } from '../middleware/authGym.js';
 import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
@@ -112,7 +113,10 @@ router.post('/send-bulk', async (req, res) => {
 
         const personalizedBody = renderBodyTemplate(body, member);
 
-        const result = await sendReminder(to, title, personalizedBody);
+        const gym = await Gym.findById(gymId).select('whatsapp').lean();
+        const gymWhatsapp = gym?.whatsapp?.phoneNumberId && gym?.whatsapp?.accessToken ? gym.whatsapp : undefined;
+
+        const result = await sendReminder(to, title, personalizedBody, gymWhatsapp);
 
         await ReminderLog.create({
           gym: gymId,

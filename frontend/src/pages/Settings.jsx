@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSettings, updateSettings } from '../api';
+import { getSettings, updateSettings, getGymWhatsAppStatus, connectGymWhatsApp } from '../api';
 import './Settings.css';
 
 const BUILTINS = [
@@ -52,14 +52,37 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [whatsapp, setWhatsapp] = useState({
+    connected: false,
+    phoneNumberId: '',
+    businessAccountId: '',
+    phoneNumber: '',
+    verified: false,
+  });
+  const [whatsappForm, setWhatsappForm] = useState({
+    phoneNumberId: '',
+    accessToken: '',
+    businessAccountId: '',
+    phoneNumber: '',
+  });
+  const [whatsappSaving, setWhatsappSaving] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     const load = async () => {
       try {
-        const s = await getSettings();
+        const [s, wa] = await Promise.all([getSettings(), getGymWhatsAppStatus().catch(() => null)]);
         if (!mounted) return;
         setForm(parseResponse(s));
+        if (wa) {
+          setWhatsapp(wa);
+          setWhatsappForm((prev) => ({
+            ...prev,
+            phoneNumberId: wa.phoneNumberId || '',
+            businessAccountId: wa.businessAccountId || '',
+            phoneNumber: wa.phoneNumber || '',
+          }));
+        }
         setError('');
       } catch (e) {
         if (!mounted) return;
@@ -100,6 +123,29 @@ export default function Settings() {
       ...prev,
       customTemplates: prev.customTemplates.filter((_, i) => i !== index),
     }));
+  };
+
+  const handleWhatsappConnect = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setWhatsappSaving(true);
+    try {
+      await connectGymWhatsApp({
+        phoneNumberId: whatsappForm.phoneNumberId.trim(),
+        accessToken: whatsappForm.accessToken.trim(),
+        businessAccountId: whatsappForm.businessAccountId.trim() || undefined,
+        phoneNumber: whatsappForm.phoneNumber.trim() || undefined,
+        verified: whatsappForm.verified,
+      });
+      const wa = await getGymWhatsAppStatus();
+      setWhatsapp(wa);
+      setSuccess('WhatsApp credentials saved. Set verified in Meta once your number is approved.');
+    } catch (err) {
+      setError(err?.message || 'Failed to save WhatsApp credentials');
+    } finally {
+      setWhatsappSaving(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -147,6 +193,75 @@ export default function Settings() {
       <div className="page-header">
         <h1>Settings</h1>
       </div>
+
+      <div className="card form-card settings-card" style={{ marginBottom: 24 }}>
+        <h2 style={{ margin: '0 0 12px 0' }}>Connect WhatsApp Business</h2>
+        <p className="settings-hint" style={{ marginBottom: 16 }}>
+          Each gym can connect its own WhatsApp Business number. Get these from Meta Business Suite → WhatsApp → API Setup.
+        </p>
+        <form onSubmit={handleWhatsappConnect}>
+          <div className="form-group">
+            <label htmlFor="wa-phone-id">Phone Number ID</label>
+            <input
+              id="wa-phone-id"
+              type="text"
+              value={whatsappForm.phoneNumberId}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, phoneNumberId: e.target.value }))}
+              placeholder="e.g. 123456789012345"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="wa-token">Access Token</label>
+            <input
+              id="wa-token"
+              type="password"
+              value={whatsappForm.accessToken}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, accessToken: e.target.value }))}
+              placeholder="Paste your permanent access token"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="wa-waba">Business Account ID (optional)</label>
+            <input
+              id="wa-waba"
+              type="text"
+              value={whatsappForm.businessAccountId}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, businessAccountId: e.target.value }))}
+              placeholder="WABA ID"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="wa-phone">Phone Number (optional)</label>
+            <input
+              id="wa-phone"
+              type="text"
+              value={whatsappForm.phoneNumber}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, phoneNumber: e.target.value }))}
+              placeholder="e.g. +91 9876543210"
+            />
+          </div>
+          {whatsapp.connected && (
+            <>
+              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  id="wa-verified"
+                  type="checkbox"
+                  checked={whatsappForm.verified}
+                  onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
+                />
+                <label htmlFor="wa-verified" style={{ marginBottom: 0 }}>Mark as verified (Meta approved)</label>
+              </div>
+              <p className="settings-success" style={{ marginBottom: 12 }}>
+                Connected {whatsapp.verified ? '✓ Verified' : '(Pending verification in Meta)'}
+              </p>
+            </>
+          )}
+          <button type="submit" className="btn btn-primary" disabled={whatsappSaving}>
+            {whatsappSaving ? 'Saving...' : 'Save WhatsApp credentials'}
+          </button>
+        </form>
+      </div>
+
       <div className="card form-card settings-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>WhatsApp message templates</h2>

@@ -61,8 +61,12 @@ async function runExpiryReminders() {
           .replaceAll('{fee}', member.plan?.price ?? '')
           .replaceAll('{date}', expiryStr);
 
+        if (gym?.whatsapp?.phoneNumberId && gym?.whatsapp?.accessToken && !gym.whatsapp.verified) continue;
+        const gymWhatsapp = gym?.whatsapp?.phoneNumberId && gym?.whatsapp?.accessToken && gym?.whatsapp?.verified
+          ? gym.whatsapp
+          : undefined;
         const to = toE164(member.phone);
-        const result = await sendDynamicMessage(to, composed);
+        const result = await sendDynamicMessage(to, composed, gymWhatsapp);
         if (!result.success) {
           console.error('[Cron] Expiry reminder failed:', member.name, result.error);
         }

@@ -318,3 +318,21 @@ export async function getReminderLogs(limit = 20) {
   if (!res.ok) throw new Error(data.message || 'Failed to fetch reminder logs');
   return data;
 }
+
+export async function getGymWhatsAppStatus() {
+  const res = await fetch(`${API_BASE}/gyms/whatsapp-status`, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to fetch WhatsApp status');
+  return data;
+}
+
+export async function connectGymWhatsApp(body) {
+  const res = await fetch(`${API_BASE}/gyms/connect-whatsapp`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to connect WhatsApp');
+  return data;
+}

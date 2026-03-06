@@ -1,89 +1,134 @@
 # Meta WhatsApp – Live Mode Checklist
 
-Use this checklist to switch your Meta app from **Development** to **Live** mode so WhatsApp messages work in production.
+Step-by-step guide for **Live mode** (production). Each step shows **which website to open** and **what to do**.
 
 ---
 
-## 1. Deploy Your App
+## Step 1: Deploy Your App (if not done)
 
-Ensure your frontend is deployed (e.g. Vercel). You need public URLs for Meta.
+| Open | Action |
+|------|--------|
+| [vercel.com](https://vercel.com) | Deploy frontend. Get your live URL, e.g. `https://gym-app-three-mu.vercel.app` |
+
+**Your Live URLs** (replace with your actual Vercel domain):
 
 | Item | URL |
 |------|-----|
-| **Frontend** | `https://YOUR-VERCEL-DOMAIN.vercel.app` |
-| **Privacy Policy** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy` |
-| **Data Deletion** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy#data-deletion` |
-| **Terms of Service** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/terms` |
-
-Replace `YOUR-VERCEL-DOMAIN` with your actual Vercel project URL.
+| Frontend | `https://YOUR-VERCEL-DOMAIN.vercel.app` |
+| Privacy Policy | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy` |
+| Data Deletion | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy#data-deletion` |
+| Terms of Service | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/terms` |
 
 ---
 
-## 2. Meta App Dashboard – Basic Settings
+## Step 2: Meta App – Basic Settings
 
-Go to [developers.facebook.com](https://developers.facebook.com) → Your App → **Settings** → **Basic**.
+| Open | Action |
+|------|--------|
+| [developers.facebook.com](https://developers.facebook.com) | Log in → Select your app (or create one) |
+| **Settings** → **Basic** | Fill in all required fields |
 
 | Field | Value |
 |-------|-------|
-| **Privacy Policy URL** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy` |
-| **Terms of Service URL** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/terms` |
-| **User Data Deletion** | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy#data-deletion` |
-| **Contact Email** | Your email |
-| **App Icon** | Upload (required) |
-| **Display Name** | e.g. "Gym Admin" |
-| **Category** | Select appropriate (e.g. Business) |
-| **App Purpose** | Describe how you use WhatsApp (e.g. gym reminders) |
+| Privacy Policy URL | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy` |
+| Terms of Service URL | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/terms` |
+| User Data Deletion | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy#data-deletion` |
+| Contact Email | Your email |
+| App Icon | Upload (required) |
+| Display Name | e.g. "Gym Admin" |
+| Category | Business (or appropriate) |
+| App Purpose | Describe WhatsApp usage (e.g. gym reminders) |
 
 ---
 
-## 3. WhatsApp Template
+## Step 3: WhatsApp – Add Product & Phone Number
 
-Create a template in **Meta Business Manager** → **WhatsApp** → **Message Templates**:
-
-- **Name:** `gym_dynamic_message`
-- **Category:** UTILITY or MARKETING
-- **Body:** `{{1}}` (single parameter = full message)
-- **Language:** English
-
-Submit for approval. Once approved, set in backend `.env`:
-
-```env
-META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_dynamic_message
-META_WHATSAPP_WELCOME_TEMPLATE_LANG=en_US
-```
+| Open | Action |
+|------|--------|
+| [developers.facebook.com](https://developers.facebook.com) → Your App | **Add Product** → **WhatsApp** → **Set up** |
+| **WhatsApp** → **API Setup** | Add a phone number (or use existing) |
+| Same page | Copy **Phone number ID** (save for Step 6) |
 
 ---
 
-## 4. System User Token (Production)
+## Step 4: Create Message Template
 
-Development tokens expire quickly. For Live mode, use a **System User** token:
-
-1. **Meta Business Settings** → **Users** → **System Users**
-2. Create a system user (or use existing)
-3. **Generate Token** → Select your app
-4. Add permissions: `whatsapp_business_messaging`, `whatsapp_business_management`
-5. Copy the token and set in backend `.env`:
-
-```env
-META_WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-META_WHATSAPP_ACCESS_TOKEN=your_system_user_token
-```
+| Open | Action |
+|------|--------|
+| [business.facebook.com](https://business.facebook.com) | **WhatsApp Manager** → **Message Templates** |
+| **Create template** | Name: `gym_dynamic_message` |
+| | Category: UTILITY or MARKETING |
+| | Body: `{{1}}` (single parameter) |
+| | Language: English |
+| **Submit** | Wait for Meta approval (24–48 hours) |
 
 ---
 
-## 5. Switch to Live Mode
+## Step 5: System User Token (Production)
 
-1. In App Dashboard, open the **App Mode** toggle (top of page)
-2. Switch from **Development** to **Live**
-3. If any field is missing, Meta will show an error – fix it in Basic Settings
+| Open | Action |
+|------|--------|
+| [business.facebook.com](https://business.facebook.com) → **Settings** | **Users** → **System Users** |
+| Create or select system user | **Generate Token** |
+| Select your app | Add permissions: `whatsapp_business_messaging`, `whatsapp_business_management` |
+| Copy token | Save for Step 6 (do not share) |
 
 ---
 
-## 6. Verify
+## Step 6: Add Credentials to Your App
 
-- Add a test member in your gym app with WhatsApp enabled
-- Confirm the welcome message is sent
-- Check Meta’s WhatsApp API logs for any errors
+**Option A – Per-gym (Settings in app):**
+
+| Open | Action |
+|------|--------|
+| `https://YOUR-VERCEL-DOMAIN.vercel.app` | Log in to your gym app |
+| **Settings** → **Connect WhatsApp Business** | Paste Phone Number ID, Access Token |
+| | Click **Save WhatsApp credentials** |
+| | After Meta approves number: check **Mark as verified** → Save |
+
+**Option B – Backend env (Render):**
+
+| Open | Action |
+|------|--------|
+| [dashboard.render.com](https://dashboard.render.com) | Your backend service → **Environment** |
+| Add variables | `META_WHATSAPP_PHONE_NUMBER_ID`, `META_WHATSAPP_ACCESS_TOKEN` |
+| | `META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_dynamic_message` |
+| | `META_WHATSAPP_WELCOME_TEMPLATE_LANG=en_US` |
+
+---
+
+## Step 7: Switch to Live Mode
+
+| Open | Action |
+|------|--------|
+| [developers.facebook.com](https://developers.facebook.com) → Your App | Top of page: **App Mode** toggle |
+| Toggle | Switch from **Development** to **Live** |
+| If error appears | Fix missing fields in **Settings** → **Basic** |
+
+---
+
+## Step 8: Verify
+
+| Open | Action |
+|------|--------|
+| `https://YOUR-VERCEL-DOMAIN.vercel.app` | Log in → **Members** → **Add member** |
+| Add test member | Name, phone (real WhatsApp number), plan, dates |
+| Check **Send welcome message** | Save |
+| Member's WhatsApp | Confirm welcome message received |
+| [developers.facebook.com](https://developers.facebook.com) → Your App → **WhatsApp** → **API Setup** | Check logs for errors |
+
+---
+
+## Quick Reference – Which Website for What
+
+| Task | Website |
+|------|---------|
+| Deploy frontend | [vercel.com](https://vercel.com) |
+| Meta app settings, add WhatsApp, switch to Live | [developers.facebook.com](https://developers.facebook.com) |
+| Create template, System User token | [business.facebook.com](https://business.facebook.com) |
+| Connect WhatsApp (per-gym) | Your app: `https://YOUR-VERCEL-DOMAIN.vercel.app/#/settings` |
+| Backend env vars | [dashboard.render.com](https://dashboard.render.com) |
+| Test welcome message | Your app: `https://YOUR-VERCEL-DOMAIN.vercel.app/#/members` |
 
 ---
 
@@ -91,7 +136,8 @@ META_WHATSAPP_ACCESS_TOKEN=your_system_user_token
 
 | Issue | Fix |
 |------|-----|
-| "Privacy Policy URL invalid" | Ensure URL is public, not localhost, and loads correctly |
-| "Data deletion required" | Use `#/privacy#data-deletion` – the section has explicit instructions |
-| Template not found | Wait for approval; ensure template name matches env exactly |
-| Messages not sending | Check System User token has correct permissions; verify phone number ID |
+| "Privacy Policy URL invalid" | Use your live Vercel URL, not localhost |
+| "Data deletion required" | Use `#/privacy#data-deletion` – section must exist on Privacy page |
+| Template not found | Wait for approval; name must match exactly: `gym_dynamic_message` |
+| Messages not sending | Check token permissions; verify Phone Number ID; ensure number is approved |
+| "Recipient not in allowed list" | Only in Dev mode – switch to Live to remove this restriction |

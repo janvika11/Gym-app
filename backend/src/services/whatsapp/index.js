@@ -12,7 +12,7 @@ const DEFAULT_REMINDER_LANGUAGE_CODE =
   process.env.META_WHATSAPP_REMINDER_LANGUAGE_CODE || 'en_US';
 
 /**
- * Get WhatsApp config from env (forced to production)
+ * Get WhatsApp config from env (fallback when gym has no config)
  */
 export function getWhatsAppConfig() {
   const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
@@ -29,12 +29,28 @@ export function getWhatsAppConfig() {
 }
 
 /**
- * Send a WhatsApp message via Cloud API (production only)
+ * Get WhatsApp config: prefer gym's config, else env
+ * @param {Object} [gymWhatsapp] - { phoneNumberId, accessToken }
+ */
+function resolveConfig(gymWhatsapp) {
+  if (gymWhatsapp?.phoneNumberId && gymWhatsapp?.accessToken) {
+    return {
+      phoneNumberId: gymWhatsapp.phoneNumberId,
+      accessToken: gymWhatsapp.accessToken,
+      baseUrl: process.env.META_WHATSAPP_BASE_URL ?? DEFAULT_BASE_URL,
+    };
+  }
+  return getWhatsAppConfig();
+}
+
+/**
+ * Send a WhatsApp message via Cloud API
  * @param {string} to - E.164 phone number, e.g. 919876543210
  * @param {Object} message - Message payload
+ * @param {Object} [gymWhatsapp] - Optional gym WhatsApp config
  */
-export async function sendWhatsAppMessage(to, message) {
-  const { phoneNumberId, accessToken, baseUrl } = getWhatsAppConfig();
+export async function sendWhatsAppMessage(to, message, gymWhatsapp) {
+  const { phoneNumberId, accessToken, baseUrl } = resolveConfig(gymWhatsapp);
   const url = `${baseUrl}/${phoneNumberId}/messages`;
 
   const body = {
@@ -67,14 +83,14 @@ export async function sendWhatsAppMessage(to, message) {
 /**
  * Send plain text message
  */
-export async function sendText(to, text) {
-  return sendWhatsAppMessage(to, { type: 'text', text: { body: text } });
+export async function sendText(to, text, gymWhatsapp) {
+  return sendWhatsAppMessage(to, { type: 'text', text: { body: text } }, gymWhatsapp);
 }
 
 /**
  * Send template message (approved templates)
  */
-export async function sendTemplate(to, templateName, languageCode = 'en', components = []) {
+export async function sendTemplate(to, templateName, languageCode = 'en', components = [], gymWhatsapp) {
   return sendWhatsAppMessage(to, {
     type: 'template',
     template: {
@@ -82,15 +98,15 @@ export async function sendTemplate(to, templateName, languageCode = 'en', compon
       language: { code: languageCode },
       ...(components.length ? { components } : {}),
     },
-  });
+  }, gymWhatsapp);
 }
 
 /**
  * Send reminder text (production-safe wrapper)
  */
-export async function sendReminder(to, title, body) {
+export async function sendReminder(to, title, body, gymWhatsapp) {
   const text = `*${title}*\n\n${body}`;
-  return sendText(to, text);
+  return sendText(to, text, gymWhatsapp);
 }
 
 /**
@@ -117,8 +133,9 @@ export async function sendWelcomeTemplate(to, memberName) {
  * @param {string} memberName - Member's name
  * @param {string|null} customMessage - From GymSettings.welcomeMessage, or null to use default
  * @param {string} [gymName] - Gym name for {gym} placeholder
+ * @param {Object} [gymWhatsapp] - Optional gym WhatsApp config
  */
-export async function sendWelcomeMessage(to, memberName, customMessage, gymName = '') {
+export async function sendWelcomeMessage(to, memberName, customMessage, gymName = '', gymWhatsapp) {
   const defaultMsg = "Hi {name}, welcome to {gym}! We're excited to have you. 💪";
   const msg = (customMessage || defaultMsg)
     .replaceAll('{name}', memberName || '')
@@ -144,12 +161,12 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
  * Use for: welcome, expiry reminders, custom messages.
  * gym_dynamic_message template in Meta: Body: {{1}}
  */
-export async function sendDynamicMessage(to, composedMessage) {
+export async function sendDynamicMessage(to, composedMessage, gymWhatsapp) {
   const templateName = process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'gym_dynamic_message';
   const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US';
   return sendTemplate(to, templateName, lang, [
     { type: 'body', parameters: [{ type: 'text', text: String(composedMessage || '') }] },
-  ]);
+  ], gymWhatsapp);
 }
 
 export default {

@@ -74,7 +74,7 @@ router.post('/bulk', async (req, res) => {
             const settings = await GymSettings.findOne({ gym: gymId });
             const template = await MessageTemplate.findOne({ gym: gymId, type: 'WELCOME' });
             const welcomeMsg = template?.content || settings?.welcomeMessage || gym?.welcomeMessage || null;
-            const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name);
+            const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name, gym?.whatsapp);
             await Member.findByIdAndUpdate(member._id, {
               welcomeSent: result.success,
               welcomeError: result.success ? undefined : (result.error || 'Failed'),
@@ -202,7 +202,7 @@ router.post('/:id/remind', async (req, res) => {
     const digits = String(member.phone).replace(/\D/g, '').replace(/^0+/, '');
     const to = digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
 
-    const result = await sendDynamicMessage(to, composed);
+    const result = await sendDynamicMessage(to, composed, gym?.whatsapp);
     if (!result.success) {
       return res.status(400).json({ message: result.error || 'Failed to send reminder' });
     }

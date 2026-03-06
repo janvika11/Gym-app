@@ -10,6 +10,13 @@ const gymSchema = new mongoose.Schema(
     password: { type: String, required: true },
     phone: { type: String },
     welcomeMessage: { type: String, default: defaultWelcome },
+    whatsapp: {
+      phoneNumberId: { type: String },
+      businessAccountId: { type: String },
+      accessToken: { type: String },
+      phoneNumber: { type: String },
+      verified: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );

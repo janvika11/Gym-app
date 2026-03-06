@@ -6,6 +6,80 @@ import { authGym } from '../middleware/authGym.js';
 
 const router = express.Router();
 
+/**
+ * Connect gym's WhatsApp Business number.
+ * POST /api/gyms/connect-whatsapp
+ * Body: { phoneNumberId, accessToken, businessAccountId?, phoneNumber? }
+ */
+router.post('/connect-whatsapp', authGym, async (req, res) => {
+  try {
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
+
+    const { phoneNumberId, accessToken, businessAccountId, phoneNumber, verified } = req.body;
+    if (!phoneNumberId || !accessToken) {
+      return res.status(400).json({ message: 'phoneNumberId and accessToken are required' });
+    }
+
+    const gym = await Gym.findByIdAndUpdate(
+      gymId,
+      {
+        $set: {
+          'whatsapp.phoneNumberId': String(phoneNumberId).trim(),
+          'whatsapp.accessToken': String(accessToken).trim(),
+          ...(businessAccountId != null && { 'whatsapp.businessAccountId': String(businessAccountId).trim() }),
+          ...(phoneNumber != null && { 'whatsapp.phoneNumber': String(phoneNumber).trim() }),
+          'whatsapp.verified': verified === true,
+        },
+      },
+      { new: true }
+    ).select('-password');
+
+    if (!gym) return res.status(404).json({ message: 'Gym not found' });
+
+    res.json({
+      message: 'WhatsApp credentials saved. Set verified to true once Meta approves your number.',
+      gym: {
+        id: gym._id,
+        name: gym.name,
+        whatsapp: {
+          phoneNumberId: gym.whatsapp?.phoneNumberId,
+          businessAccountId: gym.whatsapp?.businessAccountId,
+          phoneNumber: gym.whatsapp?.phoneNumber,
+          verified: gym.whatsapp?.verified,
+        },
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * Get gym's WhatsApp connection status (for Settings UI).
+ * GET /api/gyms/whatsapp-status
+ */
+router.get('/whatsapp-status', authGym, async (req, res) => {
+  try {
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
+
+    const gym = await Gym.findById(gymId).select('whatsapp').lean();
+    if (!gym) return res.status(404).json({ message: 'Gym not found' });
+
+    const wa = gym.whatsapp || {};
+    res.json({
+      connected: !!(wa.phoneNumberId && wa.accessToken),
+      phoneNumberId: wa.phoneNumberId || null,
+      businessAccountId: wa.businessAccountId || null,
+      phoneNumber: wa.phoneNumber || null,
+      verified: wa.verified || false,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, welcomeMessage } = req.body;
