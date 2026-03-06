@@ -47,6 +47,9 @@ router.post('/bulk', async (req, res) => {
       }
       const startDate = row.startDate ? new Date(row.startDate) : undefined;
       const endDate = row.endDate ? new Date(row.endDate) : undefined;
+      const validEndDate = endDate && !isNaN(endDate) ? endDate : undefined;
+      let paymentStatus = ['paid', 'pending', 'overdue'].includes(row.paymentStatus) ? row.paymentStatus : 'paid';
+      if (validEndDate && validEndDate < new Date()) paymentStatus = 'overdue';
       const member = new Member({
         gym: gymId,
         name,
@@ -54,8 +57,8 @@ router.post('/bulk', async (req, res) => {
         email: row.email ? String(row.email).trim() : undefined,
         plan: planId || undefined,
         startDate: startDate && !isNaN(startDate) ? startDate : undefined,
-        endDate: endDate && !isNaN(endDate) ? endDate : undefined,
-        paymentStatus: ['paid', 'pending', 'overdue'].includes(row.paymentStatus) ? row.paymentStatus : 'paid',
+        endDate: validEndDate,
+        paymentStatus,
         active: row.active !== false,
         notes: row.notes ? String(row.notes).trim() : undefined,
       });
