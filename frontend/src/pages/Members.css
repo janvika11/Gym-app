@@ -205,3 +205,47 @@
   flex: 1;
   text-align: center;
 }
+
+.import-modal {
+  max-width: 560px;
+}
+.import-hint {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  margin: 0 0 0.75rem;
+}
+.import-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 0.75rem;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: #e4e4e7;
+  font-family: monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+.import-textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+}
+.import-result {
+  font-size: 0.9rem;
+  color: #22c55e;
+  margin-bottom: 1rem;
+}
+.import-result.has-errors {
+  color: #fbbf24;
+}
+.import-result ul {
+  margin: 0.25rem 0 0 1.25rem;
+  font-size: 0.8rem;
+  color: #f87171;
+}
+.import-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}

@@ -77,6 +77,9 @@ export default function Layout() {
             <span />
           </button>
           <h1 className="layout-title">{currentTitle}</h1>
+          <button type="button" className="layout-logout" onClick={logout}>
+            Logout
+          </button>
         </header>
         <div className="main-content">
           <Outlet />

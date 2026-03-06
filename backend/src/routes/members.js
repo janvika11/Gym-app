@@ -1,5 +1,6 @@
 import express from 'express';
 import Member from '../models/Member.js';
+import Plan from '../models/Plan.js';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
 import MessageTemplate from '../models/MessageTemplate.js';
@@ -15,6 +16,80 @@ router.get('/', async (req, res) => {
     if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
     const members = await Member.find({ gym: gymId }).populate('plan').sort({ createdAt: -1 });
     res.json(members);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/bulk', async (req, res) => {
+  try {
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    if (!gymId) return res.status(400).json({ message: 'No gym assigned.' });
+    const { members: rows, sendWelcome } = req.body;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return res.status(400).json({ message: 'Send an array of members. Each: { name, phone, email?, plan?, startDate?, endDate?, paymentStatus?, notes? }' });
+    }
+    const plans = await Plan.find({ gym: gymId });
+    const planByName = Object.fromEntries(plans.map((p) => [String(p.name).toLowerCase(), p._id]));
+    const created = [];
+    const errors = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const name = String(row.name || '').trim();
+      const phone = normalizePhone(row.phone);
+      if (!name || !phone) {
+        errors.push({ row: i + 1, msg: 'Name and phone required' });
+        continue;
+      }
+      let planId = row.plan;
+      if (!planId && row.planName) {
+        planId = planByName[String(row.planName).toLowerCase()];
+      }
+      const startDate = row.startDate ? new Date(row.startDate) : undefined;
+      const endDate = row.endDate ? new Date(row.endDate) : undefined;
+      const member = new Member({
+        gym: gymId,
+        name,
+        phone,
+        email: row.email ? String(row.email).trim() : undefined,
+        plan: planId || undefined,
+        startDate: startDate && !isNaN(startDate) ? startDate : undefined,
+        endDate: endDate && !isNaN(endDate) ? endDate : undefined,
+        paymentStatus: ['paid', 'pending', 'overdue'].includes(row.paymentStatus) ? row.paymentStatus : 'paid',
+        active: row.active !== false,
+        notes: row.notes ? String(row.notes).trim() : undefined,
+      });
+      try {
+        await member.save();
+        await member.populate('plan');
+        created.push(member);
+        if (sendWelcome && member.phone) {
+          try {
+            const digits = String(member.phone).replace(/\D/g, '').replace(/^0+/, '');
+            const to = digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
+            const gym = await Gym.findById(gymId);
+            const settings = await GymSettings.findOne({ gym: gymId });
+            const template = await MessageTemplate.findOne({ gym: gymId, type: 'WELCOME' });
+            const welcomeMsg = template?.content || settings?.welcomeMessage || gym?.welcomeMessage || null;
+            const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name);
+            await Member.findByIdAndUpdate(member._id, {
+              welcomeSent: result.success,
+              welcomeError: result.success ? undefined : (result.error || 'Failed'),
+            });
+          } catch (e) {
+            console.error('Welcome failed for', to, e.message);
+          }
+        }
+      } catch (e) {
+        errors.push({ row: i + 1, name, msg: e.message });
+      }
+    }
+    res.status(201).json({
+      created: created.length,
+      errors: errors.length,
+      details: errors.length ? errors : undefined,
+      members: created,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

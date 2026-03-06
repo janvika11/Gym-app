@@ -88,6 +88,17 @@ export async function deleteMember(id) {
   return data;
 }
 
+export async function bulkImportMembers(members, sendWelcome = false) {
+  const res = await fetch(`${API_BASE}/members/bulk`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify({ members, sendWelcome }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Bulk import failed');
+  return data;
+}
+
 export async function sendMemberReminder(memberId) {
   const res = await fetch(`${API_BASE}/members/${memberId}/remind`, {
     method: 'POST',
