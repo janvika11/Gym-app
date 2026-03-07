@@ -223,11 +223,31 @@ Click **Save Changes**.
 ### Step 5 — Add WhatsApp Phone Number
 
 1. Open **WhatsApp → API Setup** and click **Add Phone Number**
-2. Enter your WhatsApp Business number (e.g. +91XXXXXXXXXX) — this is the FROM number for messages
-3. **Business information:** Business Name, Website (`https://gym-app-three-mu.vercel.app`), Country, reCAPTCHA → **Next**
-4. **WhatsApp Business Profile:** Display Name, Category (Fitness / Gym) → **Next**
-5. Enter OTP sent via SMS or WhatsApp
-6. Display name review: Status may show Pending (5 min–24 hrs) or Approved
+2. **5a. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
+3. **5b. Business information**
+
+   | Field | Value |
+   |-------|-------|
+   | Business Name | Your gym name (e.g. PowerFit Gym) |
+   | Business Website | `https://gym-app-three-mu.vercel.app` |
+   | Country | Select your country |
+   | Address | Optional |
+   | reCAPTCHA | Check the box |
+
+   Click **Next**.
+
+4. **5c. WhatsApp Business Profile**
+
+   | Field | Value |
+   |-------|-------|
+   | Display Name | Your gym name |
+   | Category | Fitness / Gym |
+   | Description | Optional |
+
+   Click **Next**.
+
+5. **5d. Phone verification** – Enter OTP sent via SMS or WhatsApp
+6. **5e. Display name review** – Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
 
@@ -329,6 +349,7 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 
 ### Settings
 
+- **Gym hours:** Set opening and closing times (e.g. 6 AM – 9 PM)
 - **WhatsApp message templates:** Customize welcome, fee reminder, overdue, expiring, inactive messages
 - **Add custom templates:** For use in Reminders
 - **Connect WhatsApp Business:** Per-gym Phone Number ID, Access Token, mark verified
@@ -415,4 +436,4 @@ gym-app/
 
 ## License
 
-MIT (or your chosen license)
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.

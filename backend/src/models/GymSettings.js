@@ -20,6 +20,8 @@ const gymSettingsSchema = new mongoose.Schema(
     inactiveTitle: { type: String, default: 'Inactive (7+ days)' },
     inactiveMessage: { type: String, default: defaultInactive },
     customTemplatesJson: { type: String, default: '[]' },
+    openingTime: { type: String, default: '06:00' },
+    closingTime: { type: String, default: '21:00' },
   },
   { timestamps: true }
 );

@@ -42,6 +42,7 @@ router.put('/', async (req, res) => {
       expiringTitle, expiringMessage,
       inactiveTitle, inactiveMessage,
       customTemplates,
+      openingTime, closingTime,
     } = req.body;
 
     const $set = {};
@@ -49,6 +50,7 @@ router.put('/', async (req, res) => {
       'welcomeTitle', 'welcomeMessage', 'feeReminderTitle', 'feeReminderMessage',
       'overdueTitle', 'overdueMessage', 'expiringTitle', 'expiringMessage',
       'inactiveTitle', 'inactiveMessage',
+      'openingTime', 'closingTime',
     ];
     for (const f of fields) {
       if (req.body[f] !== undefined) $set[f] = req.body[f];

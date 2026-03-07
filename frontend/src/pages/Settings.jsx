@@ -22,6 +22,8 @@ const emptyForm = () => ({
   inactiveTitle: '',
   inactiveMessage: '',
   customTemplates: [],
+  openingTime: '06:00',
+  closingTime: '21:00',
 });
 
 function parseResponse(s) {
@@ -171,6 +173,8 @@ export default function Settings() {
         inactiveTitle: form.inactiveTitle,
         inactiveMessage: form.inactiveMessage,
         customTemplates,
+        openingTime: form.openingTime || '06:00',
+        closingTime: form.closingTime || '21:00',
       };
       const saved = await updateSettings(payload);
       const fresh = saved || await getSettings();
@@ -263,6 +267,31 @@ export default function Settings() {
       </div>
 
       <div className="card form-card settings-card">
+        <h2 style={{ margin: '0 0 12px 0' }}>Gym hours</h2>
+        <p className="settings-hint" style={{ marginBottom: 16 }}>
+          Set your gym's opening and closing times (e.g. 6 AM – 9 PM).
+        </p>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 24 }}>
+          <div className="form-group" style={{ minWidth: 140 }}>
+            <label htmlFor="openingTime">Opening time</label>
+            <input
+              id="openingTime"
+              type="time"
+              value={form.openingTime}
+              onChange={(e) => updateField('openingTime', e.target.value)}
+            />
+          </div>
+          <div className="form-group" style={{ minWidth: 140 }}>
+            <label htmlFor="closingTime">Closing time</label>
+            <input
+              id="closingTime"
+              type="time"
+              value={form.closingTime}
+              onChange={(e) => updateField('closingTime', e.target.value)}
+            />
+          </div>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>WhatsApp message templates</h2>
           <button type="button" className="btn btn-secondary" onClick={addCustomTemplate}>
