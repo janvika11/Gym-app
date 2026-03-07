@@ -449,24 +449,26 @@ gym-app/
 ## License
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+### Sign Up page
 <img width="1347" height="775" alt="image" src="https://github.com/user-attachments/assets/6bb93f93-397b-4200-9e99-ca9942b4e0d3" />
 
 
 
-
+### Dashboard
 <img width="940" height="313" alt="image" src="https://github.com/user-attachments/assets/13a139f1-94d7-4831-a67c-9c1efa062689" />
 
 
 
 
-
+### Members
 <img width="1907" height="611" alt="image" src="https://github.com/user-attachments/assets/b9ca7976-983d-4ddf-b49e-7e08df7084f4" />
 
 
 
 
 
-
+### Add memebers
 <img width="1672" height="710" alt="image" src="https://github.com/user-attachments/assets/bf7d9769-dda1-4d89-86ee-c72732a6df6b" />
 
 
@@ -474,40 +476,34 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 
 
-<img width="1891" height="653" alt="image" src="https://github.com/user-attachments/assets/f3decf40-aea0-4a2e-9651-598aa9579ab2" />
-
-
-
-
-
-
+### Fees And Plans
 <img width="1871" height="643" alt="image" src="https://github.com/user-attachments/assets/d69cc1b2-5186-40f7-b217-9955943b34f9" />
 
 
 
 
 
-
+### Whatsapp
 <img width="1860" height="818" alt="image" src="https://github.com/user-attachments/assets/ff288ef1-c6fb-4325-8785-633ee9619d1d" />
 
 
 
 
 
-
+### Compose Whatsapp message
 <img width="1880" height="888" alt="image" src="https://github.com/user-attachments/assets/8a4e1216-f7ed-4efe-a0dd-4f46d9b6cd56" />
 
 
 
 
 
-
+### Attendance
 <img width="993" height="752" alt="image" src="https://github.com/user-attachments/assets/78a271fb-c274-48bd-9328-f06922e8939a" />
 
 
 
 
-
+### Settings
 <img width="940" height="858" alt="image" src="https://github.com/user-attachments/assets/19a1aff4-39c0-4fcf-a544-d3d04f30b1d7" />
 
 
