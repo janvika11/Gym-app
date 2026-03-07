@@ -13,7 +13,7 @@ A full-stack **gym management SaaS** for admins: members, plans, attendance, fee
 - [Quick Start (Local Development)](#quick-start-local-development)
 - [Deployment](#deployment)
 - [Multi-Gym WhatsApp](#multi-gym-multi-whatsapp--how-it-works)
-- [WhatsApp Setup – Copy-Paste Guide](#whatsapp-setup--copy-paste-guide)
+- [WhatsApp Setup](#whatsapp-setup)
 - [Admin Guide](#admin-guide--how-to-use-the-app)
 - [API Reference](#api-reference)
 - [Troubleshooting](#troubleshooting)
@@ -183,165 +183,88 @@ Each gym can use its **own WhatsApp Business number**. Messages (welcome, remind
 
 ---
 
-## WhatsApp Setup – Copy-Paste Guide
+## WhatsApp Setup
 
-Copy-paste version for quick reference. Replace `gym-app-three-mu.vercel.app` with your domain if different.
+Connect a WhatsApp Business number to the Gym Management System. Replace `gym-app-three-mu.vercel.app` with your domain if different.
 
-```
-# WhatsApp Cloud API Setup (Gym SaaS Platform)
+### Step 1 — Create Meta Developer Account
 
-This guide explains how to connect a WhatsApp Business number to the Gym Management System.
+Go to [developers.facebook.com](https://developers.facebook.com) and log in with your Facebook account.
 
-Platform URL: https://gym-app-three-mu.vercel.app
+### Step 2 — Create Meta App
 
----
+1. Go to [developers.facebook.com/apps](https://developers.facebook.com/apps)
+2. Click **Create App**
+3. Select **Business**
+4. Fill App Name (e.g. Gym WhatsApp Integration) and Contact Email
+5. Click **Create App**
 
-## Step 1 — Create Meta Developer Account
+### Step 3 — Add WhatsApp Product
 
-Go to: https://developers.facebook.com
-Log in with your Facebook account.
+Inside the App Dashboard, click **Add Product**, find **WhatsApp**, and click **Set Up**.
 
----
+### Step 4 — Configure Basic App Settings
 
-## Step 2 — Create Meta App
+Open **App → Settings → Basic** and fill:
 
-Go to: https://developers.facebook.com/apps
-Click: Create App
-Select: Business
-Fill: App Name (e.g. Gym WhatsApp Integration), Contact Email
-Click: Create App
+| Field | Value |
+|-------|-------|
+| App Domain | `gym-app-three-mu.vercel.app` |
+| Privacy Policy URL | `https://gym-app-three-mu.vercel.app/#/privacy` |
+| Terms of Service URL | `https://gym-app-three-mu.vercel.app/#/terms` |
+| User Data Deletion URL | `https://gym-app-three-mu.vercel.app/#/privacy#data-deletion` |
+| Contact Email | Your email |
+| App Icon | Upload (1024×1024, mandatory) |
+| Category | Messenger Bots for Business |
 
----
+Click **Save Changes**.
 
-## Step 3 — Add WhatsApp Product
+### Step 5 — Add WhatsApp Phone Number
 
-Inside the App Dashboard:
-Click: Add Product
-Find: WhatsApp
-Click: Set Up
+1. Open **WhatsApp → API Setup** and click **Add Phone Number**
+2. Enter your WhatsApp Business number (e.g. +91XXXXXXXXXX) — this is the FROM number for messages
+3. **Business information:** Business Name, Website (`https://gym-app-three-mu.vercel.app`), Country, reCAPTCHA → **Next**
+4. **WhatsApp Business Profile:** Display Name, Category (Fitness / Gym) → **Next**
+5. Enter OTP sent via SMS or WhatsApp
+6. Display name review: Status may show Pending (5 min–24 hrs) or Approved
 
----
+### Step 6 — Create Message Template
 
-## Step 4 — Configure Basic App Settings
+1. Open [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates)
+2. Click **Create Template**
+3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `{{1}}`, Language: English
+4. Submit for approval (wait 24–48 hours)
 
-Open: App → Settings → Basic
+### Step 7 — Generate System User Access Token
 
-Fill the following:
+1. Open [business.facebook.com/settings/system-users](https://business.facebook.com/settings/system-users)
+2. Create system user (or use existing), Role: Admin, assign WhatsApp account
+3. **Generate Token** → Select your app
+4. Permissions: `whatsapp_business_messaging`, `whatsapp_business_management`
+5. Copy the token (expires every 60 days)
 
-App Domain: gym-app-three-mu.vercel.app
-Privacy Policy URL: https://gym-app-three-mu.vercel.app/#/privacy
-Terms of Service URL: https://gym-app-three-mu.vercel.app/#/terms
-User Data Deletion URL: https://gym-app-three-mu.vercel.app/#/privacy#data-deletion
-Contact Email: Your email
-App Icon: Upload (1024×1024, mandatory)
-Category: Messenger Bots for Business
+### Step 8 — Copy API Credentials
 
-Click: Save Changes
+Open **developers.facebook.com → Your App → WhatsApp → API Setup** and copy:
 
----
+- **Phone Number ID**
+- **WhatsApp Business Account ID** (WABA ID)
 
-## Step 5 — Add WhatsApp Phone Number
+### Step 9 — Switch to Live Mode
 
-Open: WhatsApp → API Setup
-Click: Add Phone Number
+In the App Dashboard (top of page), switch **App Mode** from Development to **Live**. Fix any missing Basic settings if Meta shows errors. Do this after phone number is added and template is approved.
 
-Complete the wizard in order:
+### Step 10 — Connect WhatsApp to Gym Platform
 
-5a. Enter phone number (e.g. +91XXXXXXXXXX) — this is the FROM number for messages
+1. Open [gym-app-three-mu.vercel.app](https://gym-app-three-mu.vercel.app) and log in
+2. Go to **Settings → Connect WhatsApp Business**
+3. Enter **Phone Number ID** (Step 8), **Access Token** (Step 7), Business Account ID (optional), Phone Number (optional)
+4. Click **Save WhatsApp credentials**
+5. After Meta approves your display name, check **Mark as verified (Meta approved)** and save again
 
-5b. Business information:
-    Business Name: Your gym name (e.g. PowerFit Gym)
-    Business Website: https://gym-app-three-mu.vercel.app
-    Country: Select your country
-    Address: Optional
-    reCAPTCHA: Check the box
-    Click: Next
+### Step 11 — Test the Integration
 
-5c. WhatsApp Business Profile:
-    Display Name: Your gym name
-    Category: Fitness / Gym
-    Description: Optional
-    Click: Next
-
-5d. Phone verification: Enter OTP sent via SMS or WhatsApp
-
-5e. Display name review: Status may show Pending (5 min–24 hrs) or Approved
-
----
-
-## Step 6 — Create Message Template
-
-Open: https://business.facebook.com/wa/manage/message-templates
-Click: Create Template
-
-Category: Utility
-Template Name: gym_dynamic_message
-Body: {{1}} (single parameter = full message)
-Language: English
-
-Submit for approval. Wait 24–48 hours.
-
----
-
-## Step 7 — Generate System User Access Token
-
-Open: https://business.facebook.com/settings/system-users
-Create system user (or use existing)
-Name: e.g. Gym WhatsApp Bot
-Role: Admin
-Assign your WhatsApp account
-Generate Token → Select your app
-Permissions: whatsapp_business_messaging, whatsapp_business_management
-Copy the token (expires every 60 days)
-
----
-
-## Step 8 — Copy API Credentials
-
-Open: developers.facebook.com → Your App → WhatsApp → API Setup
-
-Copy:
-- Phone Number ID
-- WhatsApp Business Account ID (WABA ID)
-
----
-
-## Step 9 — Switch to Live Mode
-
-Open: App Dashboard (top of page)
-App Mode: Development → Click to switch to Live
-Fix any missing Basic settings if Meta shows errors.
-
-Do this after phone number is added and template is approved.
-
----
-
-## Step 10 — Connect WhatsApp to Gym Platform
-
-Open: https://gym-app-three-mu.vercel.app
-Go to: Settings → Connect WhatsApp Business
-
-Enter:
-Phone Number ID: (from Step 8)
-Access Token: (from Step 7)
-Business Account ID (optional): WABA ID from Step 8
-Phone Number (optional): e.g. +91 9876543210
-
-Click: Save WhatsApp credentials
-
-After Meta approves your display name, check "Mark as verified (Meta approved)" and save again.
-
----
-
-## Step 11 — Test the Integration
-
-Gym app → Members → Add member
-Add test member: Name: Rahul, Phone: 919876543210
-Check: Send welcome message
-Save
-
-The system will send: Welcome message, Membership reminders, Payment alerts, Expiry reminders
-```
+Add a test member (Name: Rahul, Phone: 919876543210), check **Send welcome message**, and save. The system will send welcome messages, membership reminders, payment alerts, and expiry reminders.
 
 ---
 
