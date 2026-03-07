@@ -70,6 +70,7 @@ export default function Settings() {
     phoneNumber: '',
   });
   const [whatsappSaving, setWhatsappSaving] = useState(false);
+  const [gymHoursSaving, setGymHoursSaving] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -152,6 +153,26 @@ export default function Settings() {
     }
   };
 
+  const handleSaveGymHours = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setGymHoursSaving(true);
+    try {
+      await updateSettings({
+        openingTime: form.openingTime || '06:00',
+        closingTime: form.closingTime || '21:00',
+      });
+      const fresh = await getSettings();
+      setForm((prev) => ({ ...prev, openingTime: fresh.openingTime ?? '06:00', closingTime: fresh.closingTime ?? '21:00' }));
+      setSuccess('Gym hours saved.');
+    } catch (err) {
+      setError(err?.message || 'Failed to save gym hours');
+    } finally {
+      setGymHoursSaving(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -175,14 +196,12 @@ export default function Settings() {
         inactiveTitle: form.inactiveTitle,
         inactiveMessage: form.inactiveMessage,
         customTemplates,
-        openingTime: form.openingTime || '06:00',
-        closingTime: form.closingTime || '21:00',
       };
       const saved = await updateSettings(payload);
       const fresh = saved || await getSettings();
       setForm(parseResponse(fresh));
       const count = (fresh.customTemplates || []).length;
-      setSuccess(count > 0 ? `Saved! ${count} custom template(s).` : 'Settings saved.');
+      setSuccess(count > 0 ? `Saved! ${count} custom template(s).` : 'Templates saved.');
     } catch (err) {
       setError(err?.message || 'Failed to save');
     } finally {
@@ -264,32 +283,39 @@ export default function Settings() {
         </form>
       </div>
 
-      <div className="card form-card settings-card">
+      <div className="card form-card settings-card" style={{ marginBottom: 24 }}>
         <h2 style={{ margin: '0 0 12px 0' }}>Gym hours</h2>
         <p className="settings-hint" style={{ marginBottom: 16 }}>
           Set your gym's opening and closing times (e.g. 6 AM – 9 PM).
         </p>
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 24 }}>
-          <div className="form-group" style={{ minWidth: 140 }}>
-            <label htmlFor="openingTime">Opening time</label>
-            <input
-              id="openingTime"
-              type="time"
-              value={form.openingTime}
-              onChange={(e) => updateField('openingTime', e.target.value)}
-            />
+        <form onSubmit={handleSaveGymHours}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div className="form-group" style={{ minWidth: 140 }}>
+              <label htmlFor="openingTime">Opening time</label>
+              <input
+                id="openingTime"
+                type="time"
+                value={form.openingTime || '06:00'}
+                onChange={(e) => updateField('openingTime', e.target.value)}
+              />
+            </div>
+            <div className="form-group" style={{ minWidth: 140 }}>
+              <label htmlFor="closingTime">Closing time</label>
+              <input
+                id="closingTime"
+                type="time"
+                value={form.closingTime || '21:00'}
+                onChange={(e) => updateField('closingTime', e.target.value)}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={gymHoursSaving}>
+              {gymHoursSaving ? 'Saving...' : 'Save gym hours'}
+            </button>
           </div>
-          <div className="form-group" style={{ minWidth: 140 }}>
-            <label htmlFor="closingTime">Closing time</label>
-            <input
-              id="closingTime"
-              type="time"
-              value={form.closingTime}
-              onChange={(e) => updateField('closingTime', e.target.value)}
-            />
-          </div>
-        </div>
+        </form>
+      </div>
 
+      <div className="card form-card settings-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>WhatsApp message templates</h2>
           <button type="button" className="btn btn-secondary" onClick={addCustomTemplate}>
@@ -358,7 +384,7 @@ export default function Settings() {
           {success && <p className="settings-success">{success}</p>}
           {error && <p className="form-error">{error}</p>}
           <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? 'Saving...' : 'Save templates'}
           </button>
         </form>
       </div>

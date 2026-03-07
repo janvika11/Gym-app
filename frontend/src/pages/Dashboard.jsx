@@ -1,20 +1,32 @@
 import { useEffect, useState } from 'react';
-import { getStats, getAttendanceTodayHours } from '../api';
+import { getStats, getAttendanceTodayHours, getSettings } from '../api';
 import './Dashboard.css';
+
+function formatTime(hhmm) {
+  if (!hhmm) return '—';
+  const [h, m] = String(hhmm).split(':');
+  const hour = parseInt(h, 10);
+  if (hour === 0) return `12:${m || '00'} AM`;
+  if (hour < 12) return `${hour}:${m || '00'} AM`;
+  if (hour === 12) return `12:${m || '00'} PM`;
+  return `${hour - 12}:${m || '00'} PM`;
+}
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [data, setData] = useState(null);
   const [peak, setPeak] = useState(null);
+  const [gymHours, setGymHours] = useState(null);
 
   const load = async () => {
     setLoading(true);
     setError('');
     try {
-      const [statsResult, peakResult] = await Promise.allSettled([
+      const [statsResult, peakResult, settingsResult] = await Promise.allSettled([
         getStats(),
         getAttendanceTodayHours(),
+        getSettings().catch(() => null),
       ]);
       const statsJson = statsResult.status === 'fulfilled' ? statsResult.value : null;
       const peakRes = peakResult.status === 'fulfilled' ? peakResult.value : {};
@@ -97,6 +109,14 @@ export default function Dashboard() {
 
       {!loading && !error && (
         <>
+          {gymHours && (
+            <div className="dash-gym-hours">
+              <span className="dash-gym-hours-label">Gym hours</span>
+              <span className="dash-gym-hours-value">
+                {formatTime(gymHours.opening)} – {formatTime(gymHours.closing)}
+              </span>
+            </div>
+          )}
           <div className="dashboard-grid">
             {stats.map((s) => (
               <div key={s.label} className="dash-card">
