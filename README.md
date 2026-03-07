@@ -223,13 +223,13 @@ Click **Save Changes**.
 ### Step 5 — Add WhatsApp Phone Number
 
 1. Open **WhatsApp → API Setup** and click **Add Phone Number**
-2. **5a. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
+2. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
 
    **⚠️ Before adding the number, make sure:**
    - That number **does NOT have WhatsApp installed** (personal or business)
    - That number **is not already used for WhatsApp Business API**
 
-3. **5b. Business information**
+3. Business information**
 
    | Field | Value |
    |-------|-------|
@@ -241,7 +241,7 @@ Click **Save Changes**.
 
    Click **Next**.
 
-4. **5c. WhatsApp Business Profile**
+4. WhatsApp Business Profile**
 
    | Field | Value |
    |-------|-------|
@@ -251,8 +251,8 @@ Click **Save Changes**.
 
    Click **Next**.
 
-5. **5d. Phone verification** – Enter OTP sent via SMS or WhatsApp
-6. **5e. Display name review** – Status may show Pending (5 min–24 hrs) or Approved
+5.  Phone verification** – Enter OTP sent via SMS or WhatsApp
+6.  Display name review** – Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
 
