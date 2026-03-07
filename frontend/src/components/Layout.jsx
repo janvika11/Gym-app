@@ -24,7 +24,9 @@ export default function Layout() {
   const closeSidebar = () => setSidebarOpen(false);
 
   const currentTitle =
-    navItems.find((n) => location.pathname.startsWith(n.to))?.label || 'Dashboard';
+    location.pathname.startsWith('/plans')
+      ? 'Plans'
+      : navItems.find((n) => location.pathname.startsWith(n.to))?.label || 'Dashboard';
 
   return (
     <div className="layout">

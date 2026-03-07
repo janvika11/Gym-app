@@ -45,8 +45,7 @@ export default function Plans() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>Plans</h1>
+      <div className="page-header" style={{ justifyContent: 'flex-end' }}>
         <Link to="/plans/new" className="btn btn-primary">Add plan</Link>
       </div>
       <div className="plans-grid plans-grid-fees-style">

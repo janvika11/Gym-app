@@ -248,9 +248,6 @@ export default function Reminders() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>WhatsApp</h1>
-      </div>
 
       <div className="wh-top-actions">
         <button

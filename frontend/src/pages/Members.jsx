@@ -213,8 +213,7 @@ export default function Members() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>Members</h1>
+      <div className="page-header" style={{ justifyContent: 'flex-end' }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button type="button" className="btn btn-secondary" onClick={() => setShowImport(true)}>
             Import CSV

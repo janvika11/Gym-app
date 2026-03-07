@@ -57,13 +57,12 @@ export default function Fees() {
         style={{
           display: 'flex',
           flexWrap: 'wrap',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           gap: 12,
           marginBottom: 24,
         }}
       >
-        <h1 style={{ margin: 0 }}>Fees & Plans</h1>
         <Link
           to="/plans"
           className="btn btn-primary"
