@@ -69,23 +69,50 @@ export default function Members() {
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/).filter(Boolean);
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/\s+/g, ''));
+    const headerLine = lines[0];
+    const firstDataLine = lines[1] || '';
+
+    const detectDelimiter = () => {
+      const byComma = headerLine.split(',').length;
+      const byTab = headerLine.split(/\t/).length;
+      const bySpaces2 = headerLine.split(/\s{2,}/).length;
+      const bySpace1 = headerLine.split(/\s+/).length;
+      if (byComma >= 2) return ',';
+      if (byTab >= 2) return '\t';
+      if (bySpaces2 >= 2) return /\s{2,}/;
+      if (bySpace1 >= 2) return /\s+/;
+      return ',';
+    };
+
+    const delim = detectDelimiter();
+    const splitRow = (line) => (typeof delim === 'string' ? line.split(delim) : line.split(delim)).map((v) => v.trim());
+
+    const headers = splitRow(headerLine).map((h) => h.toLowerCase().replace(/\s+/g, ''));
     const rows = [];
     for (let i = 1; i < lines.length; i++) {
-      const vals = lines[i].split(',').map((v) => v.trim());
+      const vals = splitRow(lines[i]);
       const row = {};
       headers.forEach((h, j) => { row[h] = vals[j] || ''; });
       rows.push(row);
     }
+
+    const toYYYYMMDD = (s) => {
+      if (!s || !String(s).trim()) return '';
+      const d = String(s).trim();
+      const m = d.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+      return d;
+    };
+
     return rows.map((r) => ({
-      name: r.name || r.membername || '',
-      phone: r.phone || r.mobile || r.contact || '',
-      email: r.email || '',
-      planName: r.plan || r.planname || '',
-      startDate: r.startdate || r.start || '',
-      endDate: r.enddate || r.end || '',
+      name: (r.name || r.membername || '').trim(),
+      phone: (r.phone || r.mobile || r.contact || '').trim(),
+      email: (r.email || '').trim(),
+      planName: (r.plan || r.planname || '').trim(),
+      startDate: toYYYYMMDD(r.startdate || r.start || ''),
+      endDate: toYYYYMMDD(r.enddate || r.end || ''),
       paymentStatus: r.paymentstatus || r.status || 'paid',
-      notes: r.notes || '',
+      notes: (r.notes || '').trim(),
     }));
   }
 
@@ -118,6 +145,17 @@ export default function Members() {
     setShowImport(false);
     setImportText('');
     setImportResult(null);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setImportText(ev.target?.result || '');
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const downloadSampleCSV = () => {
@@ -284,10 +322,14 @@ export default function Members() {
               <button type="button" className="member-modal-close" onClick={closeImport}>✕</button>
             </div>
             <p className="import-hint">
-              Paste CSV with header row. Columns: <strong>name, phone, email, plan, startDate, endDate</strong> (name and phone required).
-              Plan names must match your plans (e.g. Basic, Premium). Dates: YYYY-MM-DD.
+              Upload a CSV file or paste below. Columns: <strong>name, phone, email, plan, startDate, endDate</strong> (name and phone required).
+              Accepts comma, tab, or space-separated. Dates: YYYY-MM-DD or DD-MM-YYYY. Plan names must match your plans.
             </p>
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <label className="btn btn-sm btn-secondary" style={{ margin: 0, cursor: 'pointer' }}>
+                <input type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} />
+                Upload CSV file
+              </label>
               <button type="button" className="btn btn-sm btn-secondary" onClick={downloadSampleCSV}>
                 Download sample CSV
               </button>

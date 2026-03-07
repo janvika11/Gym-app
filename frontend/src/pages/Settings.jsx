@@ -194,10 +194,6 @@ export default function Settings() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>Settings</h1>
-      </div>
-
       <div className="card form-card settings-card" style={{ marginBottom: 24 }}>
         <h2 style={{ margin: '0 0 12px 0' }}>Connect WhatsApp Business</h2>
         <p className="settings-hint" style={{ marginBottom: 16 }}>

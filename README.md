@@ -224,6 +224,11 @@ Click **Save Changes**.
 
 1. Open **WhatsApp → API Setup** and click **Add Phone Number**
 2. **5a. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
+
+   **⚠️ Before adding the number, make sure:**
+   - That number **does NOT have WhatsApp installed** (personal or business)
+   - That number **is not already used for WhatsApp Business API**
+
 3. **5b. Business information**
 
    | Field | Value |
@@ -253,7 +258,7 @@ Click **Save Changes**.
 
 1. Open [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates)
 2. Click **Create Template**
-3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `{{1}}`, Language: English
+3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `{{1}}` (single parameter = full message), Language: English
 4. Submit for approval (wait 24–48 hours)
 
 ### Step 7 — Generate System User Access Token
