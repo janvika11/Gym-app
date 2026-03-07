@@ -325,10 +325,10 @@ export default function Members() {
               Upload a CSV file or paste below. Columns: <strong>name, phone, email, plan, startDate, endDate</strong> (name and phone required).
               Accepts comma, tab, or space-separated. Dates: YYYY-MM-DD or DD-MM-YYYY. Plan names must match your plans.
             </p>
-            <div style={{ marginBottom: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <label className="btn btn-sm btn-secondary" style={{ margin: 0, cursor: 'pointer' }}>
-                <input type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} />
-                Upload CSV file
+            <div style={{ marginBottom: 12, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <label className="btn btn-sm btn-primary" style={{ margin: 0, cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
+                <input type="file" accept=".csv,text/csv" onChange={handleFileUpload} style={{ display: 'none' }} />
+                📁 Upload CSV file
               </label>
               <button type="button" className="btn btn-sm btn-secondary" onClick={downloadSampleCSV}>
                 Download sample CSV

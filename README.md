@@ -39,7 +39,7 @@ Replace with your actual Vercel domain if different.
 ## Features
 
 - **Admin login** – JWT auth; signup creates gym + admin
-- **Members** – Full CRUD, bulk CSV import, send welcome WhatsApp on add
+- **Members** – Full CRUD, bulk CSV import (upload or paste), send welcome WhatsApp on add
 - **Plans** – Configurable plans (name, duration, price)
 - **Fees & Plans** – View members by plan, fee status (paid/pending/overdue)
 - **Attendance** – Check-in/check-out, today's list, monthly view, peak hours
@@ -311,9 +311,15 @@ Add a test member (Name: Rahul, Phone: 919876543210), check **Send welcome messa
 | **Edit member** | Click member → Edit → Save |
 | **Delete member** | Click member → Delete → Confirm |
 | **Send reminder** | Click member → Remind → Edit message → Send |
-| **Bulk import** | Members → Import CSV → Paste CSV or upload → Optional: Send welcome |
+| **Bulk import** | Members → Import CSV → Upload file or paste → Optional: Send welcome |
 
-**CSV format:** `name, phone, email, plan, startDate, endDate`
+**CSV format:** `name, phone, email, plan, startDate, endDate` (name and phone required)
+
+- **Upload** a `.csv` file or **paste** data into the text area
+- Accepts **comma**, **tab**, or **space-separated** values
+- Dates: **YYYY-MM-DD** or **DD-MM-YYYY**
+- Plan names must match your plans (e.g. Basic, Premium)
+- **No row limit** – 100, 200, 500+ members all work. For 500+, turn off "Send welcome" to avoid timeouts.
 
 Example:
 
