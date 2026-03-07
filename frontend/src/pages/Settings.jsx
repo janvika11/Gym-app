@@ -40,6 +40,8 @@ function parseResponse(s) {
     expiringMessage: s.expiringMessage ?? '',
     inactiveTitle: s.inactiveTitle ?? '',
     inactiveMessage: s.inactiveMessage ?? '',
+    openingTime: s.openingTime ?? '06:00',
+    closingTime: s.closingTime ?? '21:00',
     customTemplates: customTemplates.map((t) => ({
       key: t.key || `custom_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       title: t.title ?? '',
