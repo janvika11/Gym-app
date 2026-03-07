@@ -30,8 +30,8 @@ A full-stack **gym management SaaS** for admins: members, plans, attendance, fee
 | **Backend API (Render)** | `https://gym-app-2muj.onrender.com` |
 | **Privacy Policy** | `https://gym-app-three-mu.vercel.app/#/privacy` |
 | **Terms of Service** | `https://gym-app-three-mu.vercel.app/#/terms` |
-
-Replace with your actual Vercel domain if different.
+| **User Data Deletion URL** | `https://gym-app-three-mu.vercel.app/#/privacy#data-deletion` |
+Add these urls.
 
 ---
 
@@ -183,11 +183,8 @@ Each gym can use its **own WhatsApp Business number**. Messages (welcome, remind
 
 ---
 
-## WhatsApp Setup – Copy-Paste Guide
+## WhatsApp Setup Guide:
 
-Copy-paste version for quick reference. Replace `gym-app-three-mu.vercel.app` with your domain if different.
-
-```
 # WhatsApp Cloud API Setup (Gym SaaS Platform)
 
 This guide explains how to connect a WhatsApp Business number to the Gym Management System.
