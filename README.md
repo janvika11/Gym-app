@@ -224,16 +224,20 @@ Click **Save Changes**.
 
 1. Open **WhatsApp → API Setup** and click **Add Phone Number**
 2. Enter your WhatsApp Business number (e.g. +91XXXXXXXXXX) — this is the FROM number for messages
-3. **Business information:** Business Name, Website (`https://gym-app-three-mu.vercel.app`), Country, reCAPTCHA → **Next**
-4. **WhatsApp Business Profile:** Display Name, Category (Fitness / Gym) → **Next**
-5. Enter OTP sent via SMS or WhatsApp
-6. Display name review: Status may show Pending (5 min–24 hrs) or Approved
+3.  ### ⚠️ Important check (very important)
+Before adding the number make sure:
+❌ That number **does NOT have WhatsApp installed**
+❌ That number **is not already used for WhatsApp Business API**
+4. **Business information:** Business Name, Website (`https://gym-app-three-mu.vercel.app`), Country, reCAPTCHA → **Next**
+5. **WhatsApp Business Profile:** Display Name, Category (Fitness / Gym) → **Next**
+6. Enter OTP sent via SMS or WhatsApp
+7. Display name review: Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
 
 1. Open [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates)
 2. Click **Create Template**
-3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `{{1}}`, Language: English
+3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `Hi! {{message}} Thank you`, Language: English
 4. Submit for approval (wait 24–48 hours)
 
 ### Step 7 — Generate System User Access Token
