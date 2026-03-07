@@ -468,42 +468,50 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 
 
-### Add memebers
+### Add Members
+<img width="1228" height="756" alt="image" src="https://github.com/user-attachments/assets/3f6f5795-c5f6-4b3c-9a92-9ad2af253c7b" />
+
+
+
 <img width="1672" height="710" alt="image" src="https://github.com/user-attachments/assets/bf7d9769-dda1-4d89-86ee-c72732a6df6b" />
 
 
 
 
-
-
 ### Fees And Plans
+<img width="1903" height="747" alt="image" src="https://github.com/user-attachments/assets/f3ded8c3-b492-41d0-8927-74b90bcd5f29" />
+
+
+
+
+### Whatsapp
 <img width="1871" height="643" alt="image" src="https://github.com/user-attachments/assets/d69cc1b2-5186-40f7-b217-9955943b34f9" />
 
 
 
 
 
-### Whatsapp
+### Compose Whatsapp message
 <img width="1860" height="818" alt="image" src="https://github.com/user-attachments/assets/ff288ef1-c6fb-4325-8785-633ee9619d1d" />
 
 
 
 
 
-### Compose Whatsapp message
+### Attendance
 <img width="1880" height="888" alt="image" src="https://github.com/user-attachments/assets/8a4e1216-f7ed-4efe-a0dd-4f46d9b6cd56" />
 
 
 
 
 
-### Attendance
+### Settings
 <img width="993" height="752" alt="image" src="https://github.com/user-attachments/assets/78a271fb-c274-48bd-9328-f06922e8939a" />
 
 
 
 
-### Settings
+
 <img width="940" height="858" alt="image" src="https://github.com/user-attachments/assets/19a1aff4-39c0-4fcf-a544-d3d04f30b1d7" />
 
 
