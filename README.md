@@ -12,10 +12,13 @@ A full-stack **gym management SaaS** for admins: members, plans, attendance, fee
 - [Prerequisites](#prerequisites)
 - [Quick Start (Local Development)](#quick-start-local-development)
 - [Deployment](#deployment)
-- [WhatsApp Setup (Full Guide)](#whatsapp-setup-full-guide)
-- [Admin Guide – How to Use the App](#admin-guide--how-to-use-the-app)
+- [Multi-Gym WhatsApp](#multi-gym-multi-whatsapp--how-it-works)
+- [WhatsApp Setup – Copy-Paste Guide](#whatsapp-setup--copy-paste-guide)
+- [Admin Guide](#admin-guide--how-to-use-the-app)
 - [API Reference](#api-reference)
 - [Troubleshooting](#troubleshooting)
+- [Project Structure](#project-structure)
+- [Other Docs](#other-docs)
 
 ---
 
@@ -23,14 +26,12 @@ A full-stack **gym management SaaS** for admins: members, plans, attendance, fee
 
 | | URL |
 |---|-----|
-| **Frontend (Vercel)** | `https://your-app.vercel.app` |
+| **Frontend (Vercel)** | `https://gym-app-three-mu.vercel.app` |
 | **Backend API (Render)** | `https://gym-app-2muj.onrender.com` |
-| **Privacy Policy** | `https://your-app.vercel.app/#/privacy` |
-| **Terms of Service** | `https://your-app.vercel.app/#/terms` |
+| **Privacy Policy** | `https://gym-app-three-mu.vercel.app/#/privacy` |
+| **Terms of Service** | `https://gym-app-three-mu.vercel.app/#/terms` |
 
-*(Replace `your-app` with your actual Vercel project name.)*
-
-For Meta Live mode checklist, see [LIVEMODE.md](./LIVEMODE.md).
+Replace with your actual Vercel domain if different.
 
 ---
 
@@ -40,7 +41,7 @@ For Meta Live mode checklist, see [LIVEMODE.md](./LIVEMODE.md).
 - **Members** – Full CRUD, bulk CSV import, send welcome WhatsApp on add
 - **Plans** – Configurable plans (name, duration, price)
 - **Fees & Plans** – View members by plan, fee status (paid/pending/overdue)
-- **Attendance** – Check-in/check-out, today’s list, monthly view, peak hours
+- **Attendance** – Check-in/check-out, today's list, monthly view, peak hours
 - **Dashboard** – Active members, revenue, pending dues, attendance stats
 - **WhatsApp reminders** – Send to one or many members; auto reminders (expiry, overdue, inactive)
 - **Multi-gym WhatsApp** – Each gym connects its own WhatsApp Business number in Settings
@@ -154,7 +155,7 @@ Frontend runs at **http://localhost:5173** (or 3000). It proxies `/api` to the b
 
 ## Multi-Gym, Multi-WhatsApp – How It Works
 
-Each gym can use its **own WhatsApp Business number**. Messages (welcome, reminders, expiry) are sent from that gym’s number, not a shared one.
+Each gym can use its **own WhatsApp Business number**. Messages (welcome, reminders, expiry) are sent from that gym's number, not a shared one.
 
 ### How to Use It
 
@@ -168,99 +169,179 @@ Each gym can use its **own WhatsApp Business number**. Messages (welcome, remind
 
 ### What Happens After You Connect
 
-- **Welcome messages** (new members) → sent from your gym’s number  
-- **Reminders** (single or bulk) → sent from your gym’s number  
-- **Expiry reminders** (daily cron) → sent from your gym’s number (only when **verified**)  
-
-### If a Gym Has No WhatsApp Connected
-
-The app falls back to the backend env vars (`META_WHATSAPP_PHONE_NUMBER_ID`, `META_WHATSAPP_ACCESS_TOKEN`). If those are not set, WhatsApp features won’t work for that gym.
+- **Welcome messages** (new members) → sent from your gym's number
+- **Reminders** (single or bulk) → sent from your gym's number
+- **Expiry reminders** (daily cron) → sent from your gym's number (only when **verified**)
 
 ### Summary
 
 | Scenario | Who connects WhatsApp | Where messages come from |
 |----------|------------------------|---------------------------|
-| Gym A has connected | Gym A admin in Settings | Gym A’s number |
-| Gym B has connected | Gym B admin in Settings | Gym B’s number |
+| Gym A has connected | Gym A admin in Settings | Gym A's number |
+| Gym B has connected | Gym B admin in Settings | Gym B's number |
 | Gym C has not connected | — | Backend env (or nothing) |
 
 ---
 
-## WhatsApp Setup (Full Guide)
+## WhatsApp Setup – Copy-Paste Guide
 
-### Option A: Per-Gym WhatsApp (Recommended for Multi-Gym)
+Copy-paste version for quick reference. Replace `gym-app-three-mu.vercel.app` with your domain if different.
 
-Each gym admin connects their own WhatsApp Business number from the app.
-
-#### Step 1: Create Meta App & Add WhatsApp
-
-1. Go to [developers.facebook.com](https://developers.facebook.com)
-2. **Create App** → **Business** type
-3. Add product: **WhatsApp** → **API Setup**
-
-#### Step 2: Get Phone Number ID & Access Token
-
-1. In **WhatsApp** → **API Setup**:
-   - Add a phone number (or use existing)
-   - Copy **Phone number ID**
-2. **Meta Business Settings** → **Users** → **System Users**:
-   - Create system user (or use existing)
-   - **Generate Token** → Select your app
-   - Permissions: `whatsapp_business_messaging`, `whatsapp_business_management`
-   - Copy the token
-
-#### Step 3: Create Message Template (Required for Production)
-
-1. **Meta Business Manager** → **WhatsApp** → **Message Templates**
-2. Create template:
-   - **Name:** `gym_dynamic_message`
-   - **Category:** UTILITY or MARKETING
-   - **Body:** `{{1}}` (single parameter)
-   - **Language:** English
-3. Submit for approval (can take 24–48 hours)
-
-#### Step 4: Connect in Gym App
-
-1. Log in to the gym app
-2. Go to **Settings**
-3. Scroll to **Connect WhatsApp Business**
-4. Paste:
-   - **Phone Number ID**
-   - **Access Token**
-   - **Business Account ID** (optional)
-   - **Phone Number** (optional, for display)
-5. Click **Save WhatsApp credentials**
-6. After Meta approves your number, check **Mark as verified (Meta approved)** and save again
-
-#### Step 5: Add Recipients to Allowed List (Development Only)
-
-In **Development** mode, add member phone numbers to the allowed list in Meta → WhatsApp → API Setup. In **Live** mode, this is not needed.
-
----
-
-### Option B: Global WhatsApp (Backend Env)
-
-For a single gym or fallback, set in `backend/.env`:
-
-```env
-META_WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-META_WHATSAPP_ACCESS_TOKEN=your_system_user_token
-META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_dynamic_message
-META_WHATSAPP_WELCOME_TEMPLATE_LANG=en_US
 ```
+# WhatsApp Cloud API Setup (Gym SaaS Platform)
 
-When a gym has no WhatsApp connected, the app uses these env vars.
+This guide explains how to connect a WhatsApp Business number to the Gym Management System.
+
+Platform URL: https://gym-app-three-mu.vercel.app
 
 ---
 
-### WhatsApp Message Rules
+## Step 1 — Create Meta Developer Account
 
-| Type | Rule |
-|------|------|
-| **Template messages** (welcome, expiry) | Work without member messaging first. Require Meta-approved templates. |
-| **Plain text** (custom reminders) | Member must message your WhatsApp number first to open a 24-hour window. |
+Go to: https://developers.facebook.com
+Log in with your Facebook account.
 
-**For members:** Share `https://wa.me/91XXXXXXXXXX` (your business number). Once they send "Hi", you can send reminders for 24 hours.
+---
+
+## Step 2 — Create Meta App
+
+Go to: https://developers.facebook.com/apps
+Click: Create App
+Select: Business
+Fill: App Name (e.g. Gym WhatsApp Integration), Contact Email
+Click: Create App
+
+---
+
+## Step 3 — Add WhatsApp Product
+
+Inside the App Dashboard:
+Click: Add Product
+Find: WhatsApp
+Click: Set Up
+
+---
+
+## Step 4 — Configure Basic App Settings
+
+Open: App → Settings → Basic
+
+Fill the following:
+
+App Domain: gym-app-three-mu.vercel.app
+Privacy Policy URL: https://gym-app-three-mu.vercel.app/#/privacy
+Terms of Service URL: https://gym-app-three-mu.vercel.app/#/terms
+User Data Deletion URL: https://gym-app-three-mu.vercel.app/#/privacy#data-deletion
+Contact Email: Your email
+App Icon: Upload (1024×1024, mandatory)
+Category: Messenger Bots for Business
+
+Click: Save Changes
+
+---
+
+## Step 5 — Add WhatsApp Phone Number
+
+Open: WhatsApp → API Setup
+Click: Add Phone Number
+
+Complete the wizard in order:
+
+5a. Enter phone number (e.g. +91XXXXXXXXXX) — this is the FROM number for messages
+
+5b. Business information:
+    Business Name: Your gym name (e.g. PowerFit Gym)
+    Business Website: https://gym-app-three-mu.vercel.app
+    Country: Select your country
+    Address: Optional
+    reCAPTCHA: Check the box
+    Click: Next
+
+5c. WhatsApp Business Profile:
+    Display Name: Your gym name
+    Category: Fitness / Gym
+    Description: Optional
+    Click: Next
+
+5d. Phone verification: Enter OTP sent via SMS or WhatsApp
+
+5e. Display name review: Status may show Pending (5 min–24 hrs) or Approved
+
+---
+
+## Step 6 — Create Message Template
+
+Open: https://business.facebook.com/wa/manage/message-templates
+Click: Create Template
+
+Category: Utility
+Template Name: gym_dynamic_message
+Body: {{1}} (single parameter = full message)
+Language: English
+
+Submit for approval. Wait 24–48 hours.
+
+---
+
+## Step 7 — Generate System User Access Token
+
+Open: https://business.facebook.com/settings/system-users
+Create system user (or use existing)
+Name: e.g. Gym WhatsApp Bot
+Role: Admin
+Assign your WhatsApp account
+Generate Token → Select your app
+Permissions: whatsapp_business_messaging, whatsapp_business_management
+Copy the token (expires every 60 days)
+
+---
+
+## Step 8 — Copy API Credentials
+
+Open: developers.facebook.com → Your App → WhatsApp → API Setup
+
+Copy:
+- Phone Number ID
+- WhatsApp Business Account ID (WABA ID)
+
+---
+
+## Step 9 — Switch to Live Mode
+
+Open: App Dashboard (top of page)
+App Mode: Development → Click to switch to Live
+Fix any missing Basic settings if Meta shows errors.
+
+Do this after phone number is added and template is approved.
+
+---
+
+## Step 10 — Connect WhatsApp to Gym Platform
+
+Open: https://gym-app-three-mu.vercel.app
+Go to: Settings → Connect WhatsApp Business
+
+Enter:
+Phone Number ID: (from Step 8)
+Access Token: (from Step 7)
+Business Account ID (optional): WABA ID from Step 8
+Phone Number (optional): e.g. +91 9876543210
+
+Click: Save WhatsApp credentials
+
+After Meta approves your display name, check "Mark as verified (Meta approved)" and save again.
+
+---
+
+## Step 11 — Test the Integration
+
+Gym app → Members → Add member
+Add test member: Name: Rahul, Phone: 919876543210
+Check: Send welcome message
+Save
+
+The system will send: Welcome message, Membership reminders, Payment alerts, Expiry reminders
+```
 
 ---
 
@@ -286,6 +367,7 @@ When a gym has no WhatsApp connected, the app uses these env vars.
 **CSV format:** `name, phone, email, plan, startDate, endDate`
 
 Example:
+
 ```csv
 name,phone,email,plan,startDate,endDate
 John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
@@ -306,7 +388,7 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 
 - **Check in:** Select member, date → Check in
 - **Remove check-in:** Click check-in → Remove
-- **Today’s list:** See who checked in today
+- **Today's list:** See who checked in today
 - **Monthly view:** Calendar of attendance
 - **Peak hours:** Chart of busiest times
 
@@ -347,7 +429,7 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | GET | `/api/reminders/logs` | Reminder history |
 | GET | `/api/stats` | Dashboard stats |
 | POST/DELETE | `/api/attendance/check-in` | Record/remove check-in |
-| GET | `/api/attendance/today` | Today’s attendance |
+| GET | `/api/attendance/today` | Today's attendance |
 | GET | `/api/attendance/month` | Monthly attendance |
 | GET | `/api/attendance/today-hours` | Peak hours |
 | GET/PUT | `/api/settings` | Gym settings |
@@ -365,6 +447,8 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | CORS error | Add your frontend URL to backend CORS allowed origins |
 | MongoDB connection failed | Check `MONGODB_URI`; ensure IP is whitelisted (Atlas) |
 | Token expired | Generate new System User token; update env or Settings |
+| Meta Basic settings won't save | Use correct User Data Deletion URL: `#/privacy#data-deletion` |
+| App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
 
 ---
 
@@ -375,10 +459,10 @@ gym-app/
 ├── backend/
 │   ├── src/
 │   │   ├── config/       # DB connection
-│   │   ├── cron/        # Expiry reminders (9 AM IST)
-│   │   ├── middleware/  # authGym
-│   │   ├── models/      # Gym, Member, Plan, etc.
-│   │   ├── routes/      # API routes
+│   │   ├── cron/         # Expiry reminders (9 AM IST)
+│   │   ├── middleware/   # authGym
+│   │   ├── models/       # Gym, Member, Plan, etc.
+│   │   ├── routes/       # API routes
 │   │   ├── services/
 │   │   │   └── whatsapp/ # WhatsApp Cloud API
 │   │   └── index.js
@@ -389,9 +473,19 @@ gym-app/
 │   │   ├── pages/
 │   │   └── api.js
 │   └── package.json
-├── LIVEMODE.md          # Meta Live mode checklist
+├── LIVEMODE.md           # Meta Live mode checklist (which website for each step)
+├── WHATSAPP_SETUP_GUIDE.md  # Detailed WhatsApp setup (formatted)
 └── README.md
 ```
+
+---
+
+## Other Docs
+
+| File | Description |
+|------|-------------|
+| [LIVEMODE.md](./LIVEMODE.md) | Meta Live mode checklist – which website to open at each step |
+| [WHATSAPP_SETUP_GUIDE.md](./WHATSAPP_SETUP_GUIDE.md) | Detailed WhatsApp setup (formatted tables) |
 
 ---
 
