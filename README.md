@@ -450,14 +450,34 @@ gym-app/
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 <img width="1347" height="775" alt="image" src="https://github.com/user-attachments/assets/6bb93f93-397b-4200-9e99-ca9942b4e0d3" />
+
+
 <img width="940" height="313" alt="image" src="https://github.com/user-attachments/assets/13a139f1-94d7-4831-a67c-9c1efa062689" />
+
+
 <img width="1157" height="510" alt="image" src="https://github.com/user-attachments/assets/b493a22d-207f-46de-a127-f0382d921e3d" />
+
+
 <img width="940" height="400" alt="image" src="https://github.com/user-attachments/assets/e7c05abe-f6be-4d1c-a8ea-1a3a8b601380" />
+
+
 <img width="940" height="409" alt="image" src="https://github.com/user-attachments/assets/48da96fe-1e89-4a08-89cd-c4b1b60bc9ac" />
+
+
 <img width="940" height="440" alt="image" src="https://github.com/user-attachments/assets/2bae516b-da8a-4f20-af93-4b6e22783fef" />
+
+
 <img width="940" height="434" alt="image" src="https://github.com/user-attachments/assets/84d3d8a5-d698-4f41-b9d0-4d4a10505ed8" />
+
+
 <img width="940" height="437" alt="image" src="https://github.com/user-attachments/assets/ae45cc19-ddf3-41bc-8104-ba76aebbb18c" />
-<img width="1008" height="902" alt="image" src="https://github.com/user-attachments/assets/6c507a02-a4a9-407c-b7d1-d49f4ccfcdf7" />
+
+
+<img width="993" height="752" alt="image" src="https://github.com/user-attachments/assets/78a271fb-c274-48bd-9328-f06922e8939a" />
+
+
+<img width="940" height="858" alt="image" src="https://github.com/user-attachments/assets/19a1aff4-39c0-4fcf-a544-d3d04f30b1d7" />
+
 
 
 
