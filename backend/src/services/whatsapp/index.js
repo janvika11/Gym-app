@@ -151,7 +151,7 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
     return sendTemplate(to, 'hello_world', 'en_US', []);
   }
 
-  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US', [
+  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en', [
     { type: 'body', parameters: [{ type: 'text', text: msg }] },
   ]);
 }
@@ -163,7 +163,7 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
  */
 export async function sendDynamicMessage(to, composedMessage, gymWhatsapp) {
   const templateName = process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'gym_dynamic_message';
-  const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US';
+  const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en';
   return sendTemplate(to, templateName, lang, [
     { type: 'body', parameters: [{ type: 'text', text: String(composedMessage || '') }] },
   ], gymWhatsapp);
