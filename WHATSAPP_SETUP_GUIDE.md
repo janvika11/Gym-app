@@ -109,13 +109,13 @@ Click **Next**.
 | Field | Value |
 |-------|-------|
 | Category | Utility |
-| Template Name | `gym_dynamic_message` |
+| Template Name | `gym_welcome` |
 | Body | `{{1}}` (single parameter = full message) |
 | Language | English |
 
 Submit for approval. Wait 24–48 hours.
 
-> ⚠️ **Fix:** The gym app uses `gym_dynamic_message` with body `{{1}}`, not `gym_welcome`. Use this exact name.
+> ⚠️ **Fix:** The gym app uses `gym_welcome` with body `Message: {{1}}.` (or `Hi! {{1}} 😊`). Use this exact name.
 
 ---
 
@@ -205,5 +205,5 @@ The system will send:
 | Steps 6–9 | Split across 4 steps, Step 9 duplicated flow | Merged into single Step 5 (Add Phone wizard) |
 | Step 12 (Business Manager ID) | Separate step | Removed – gym app doesn't use it |
 | Step 15 fields | Business Manager ID, WABA ID, etc. | Phone Number ID, Access Token, Business Account ID (WABA), Phone Number |
-| Template name | `gym_welcome` | `gym_dynamic_message` |
+| Template name | `gym_welcome` | `gym_welcome` |
 | Settings section name | WhatsApp Integration | Connect WhatsApp Business |

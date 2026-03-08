@@ -56,7 +56,7 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 | Open | Action |
 |------|--------|
 | [business.facebook.com](https://business.facebook.com) | **WhatsApp Manager** → **Message Templates** |
-| **Create template** | Name: `gym_dynamic_message` |
+| **Create template** | Name: `gym_welcome` |
 | | Category: UTILITY or MARKETING |
 | | Body: `{{1}}` (single parameter) |
 | | Language: English |
@@ -92,8 +92,8 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 |------|--------|
 | [dashboard.render.com](https://dashboard.render.com) | Your backend service → **Environment** |
 | Add variables | `META_WHATSAPP_PHONE_NUMBER_ID`, `META_WHATSAPP_ACCESS_TOKEN` |
-| | `META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_dynamic_message` |
-| | `META_WHATSAPP_WELCOME_TEMPLATE_LANG=en_US` |
+| | `META_WHATSAPP_WELCOME_TEMPLATE_NAME=gym_welcome` |
+| | `META_WHATSAPP_WELCOME_TEMPLATE_LANG=en` |
 
 ---
 
@@ -138,6 +138,6 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 |------|-----|
 | "Privacy Policy URL invalid" | Use your live Vercel URL, not localhost |
 | "Data deletion required" | Use `#/privacy#data-deletion` – section must exist on Privacy page |
-| Template not found | Wait for approval; name must match exactly: `gym_dynamic_message` |
+| Template not found | Wait for approval; name must match exactly: `gym_welcome` |
 | Messages not sending | Check token permissions; verify Phone Number ID; ensure number is approved |
 | "Recipient not in allowed list" | Only in Dev mode – switch to Live to remove this restriction |

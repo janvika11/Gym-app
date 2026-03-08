@@ -147,7 +147,7 @@ Frontend runs at **http://localhost:5173** (or 3000). It proxies `/api` to the b
 | `ADMIN_PASSWORD` | No | Default admin password |
 | `META_WHATSAPP_PHONE_NUMBER_ID` | No* | Fallback when gym has no WhatsApp |
 | `META_WHATSAPP_ACCESS_TOKEN` | No* | Fallback access token |
-| `META_WHATSAPP_WELCOME_TEMPLATE_NAME` | No | e.g. `gym_dynamic_message` |
+| `META_WHATSAPP_WELCOME_TEMPLATE_NAME` | No | e.g. `gym_welcome` |
 | `META_WHATSAPP_WELCOME_TEMPLATE_LANG` | No | e.g. `en` (must match template language in Meta) |
 
 \* If gyms connect their own WhatsApp in Settings, env vars are optional.
@@ -258,7 +258,7 @@ Click **Save Changes**.
 
 1. Open [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates)
 2. Click **Create Template**
-3. Category: **Utility**, Name: `gym_dynamic_message`, Body: `{{1}}` (single parameter = full message), Language: English
+3. Category: **Utility**, Name: `gym_welcome`, Body: `Message: {{1}}.` (single parameter = full message), Language: English
 4. Submit for approval (wait 24–48 hours)
 
 ### Step 7 — Generate System User Access Token
@@ -398,13 +398,13 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 
 | Issue | Fix |
 |-------|-----|
-| "Template not found" | Create `gym_dynamic_message` in Meta; wait for approval |
+| "Template not found" | Create `gym_welcome` in Meta; wait for approval |
 | Messages not sending | Check Phone Number ID and token; verify gym WhatsApp in Settings |
 | Token expired | Generate new System User token; update env or Settings |
 | Meta Basic settings won't save | Use correct User Data Deletion URL: `#/privacy#data-deletion` |
  HEAD
 | App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
-| Messages not delivered / template error | Create template in Meta: Name `gym_dynamic_message`, Body `{{1}}` only, Category Utility. Wait for approval. App must be in Live mode. |
+| Messages not delivered / template error | Create template in Meta: Name `gym_welcome`, Body `Message: {{1}}.` (or `Hi! {{1}} 😊`), Category Utility. Wait for approval. App must be in Live mode. |
 
  de2faa7aa5ea94c937698ad41308ceb54e2f9181
 
