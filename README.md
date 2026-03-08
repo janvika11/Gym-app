@@ -223,13 +223,13 @@ Click **Save Changes**.
 ### Step 5 — Add WhatsApp Phone Number
 
 1. Open **WhatsApp → API Setup** and click **Add Phone Number**
-2. **5a. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
+2. Enter phone number** – Your WhatsApp Business number (e.g. +91XXXXXXXXXX). This is the FROM number for messages.
 
    **⚠️ Before adding the number, make sure:**
    - That number **does NOT have WhatsApp installed** (personal or business)
    - That number **is not already used for WhatsApp Business API**
 
-3. **5b. Business information**
+3. Business information**
 
    | Field | Value |
    |-------|-------|
@@ -241,7 +241,7 @@ Click **Save Changes**.
 
    Click **Next**.
 
-4. **5c. WhatsApp Business Profile**
+4. WhatsApp Business Profile**
 
    | Field | Value |
    |-------|-------|
@@ -251,8 +251,8 @@ Click **Save Changes**.
 
    Click **Next**.
 
-5. **5d. Phone verification** – Enter OTP sent via SMS or WhatsApp
-6. **5e. Display name review** – Status may show Pending (5 min–24 hrs) or Approved
+5.  Phone verification** – Enter OTP sent via SMS or WhatsApp
+6.  Display name review** – Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
 
@@ -398,15 +398,15 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 
 | Issue | Fix |
 |-------|-----|
-| "Recipient not in allowed list" | Add phone to Meta allowed list (Dev mode) or switch to Live |
 | "Template not found" | Create `gym_dynamic_message` in Meta; wait for approval |
 | Messages not sending | Check Phone Number ID and token; verify gym WhatsApp in Settings |
-| CORS error | Add your frontend URL to backend CORS allowed origins |
-| MongoDB connection failed | Check `MONGODB_URI`; ensure IP is whitelisted (Atlas) |
 | Token expired | Generate new System User token; update env or Settings |
 | Meta Basic settings won't save | Use correct User Data Deletion URL: `#/privacy#data-deletion` |
+ HEAD
 | App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
 | Messages not delivered / template error | Create template in Meta: Name `gym_dynamic_message`, Body `{{1}}` only, Category Utility. Wait for approval. App must be in Live mode. |
+
+ de2faa7aa5ea94c937698ad41308ceb54e2f9181
 
 ---
 
@@ -450,31 +450,67 @@ gym-app/
 ## License
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+### Sign Up page
 <img width="1347" height="775" alt="image" src="https://github.com/user-attachments/assets/6bb93f93-397b-4200-9e99-ca9942b4e0d3" />
 
 
+
+### Dashboard
 <img width="940" height="313" alt="image" src="https://github.com/user-attachments/assets/13a139f1-94d7-4831-a67c-9c1efa062689" />
 
 
-<img width="1157" height="510" alt="image" src="https://github.com/user-attachments/assets/b493a22d-207f-46de-a127-f0382d921e3d" />
 
 
-<img width="940" height="400" alt="image" src="https://github.com/user-attachments/assets/e7c05abe-f6be-4d1c-a8ea-1a3a8b601380" />
+### Members
+<img width="1907" height="611" alt="image" src="https://github.com/user-attachments/assets/b9ca7976-983d-4ddf-b49e-7e08df7084f4" />
 
 
-<img width="940" height="409" alt="image" src="https://github.com/user-attachments/assets/48da96fe-1e89-4a08-89cd-c4b1b60bc9ac" />
 
 
-<img width="940" height="440" alt="image" src="https://github.com/user-attachments/assets/2bae516b-da8a-4f20-af93-4b6e22783fef" />
+
+### Add Members
+<img width="1228" height="756" alt="image" src="https://github.com/user-attachments/assets/3f6f5795-c5f6-4b3c-9a92-9ad2af253c7b" />
 
 
-<img width="940" height="434" alt="image" src="https://github.com/user-attachments/assets/84d3d8a5-d698-4f41-b9d0-4d4a10505ed8" />
+
+<img width="1672" height="710" alt="image" src="https://github.com/user-attachments/assets/bf7d9769-dda1-4d89-86ee-c72732a6df6b" />
 
 
-<img width="940" height="437" alt="image" src="https://github.com/user-attachments/assets/ae45cc19-ddf3-41bc-8104-ba76aebbb18c" />
 
 
+### Fees And Plans
+<img width="1903" height="747" alt="image" src="https://github.com/user-attachments/assets/f3ded8c3-b492-41d0-8927-74b90bcd5f29" />
+
+
+
+
+### Whatsapp
+<img width="1871" height="643" alt="image" src="https://github.com/user-attachments/assets/d69cc1b2-5186-40f7-b217-9955943b34f9" />
+
+
+
+
+
+### Compose Whatsapp message
+<img width="1860" height="818" alt="image" src="https://github.com/user-attachments/assets/ff288ef1-c6fb-4325-8785-633ee9619d1d" />
+
+
+
+
+
+### Attendance
+<img width="1880" height="888" alt="image" src="https://github.com/user-attachments/assets/8a4e1216-f7ed-4efe-a0dd-4f46d9b6cd56" />
+
+
+
+
+
+### Settings
 <img width="993" height="752" alt="image" src="https://github.com/user-attachments/assets/78a271fb-c274-48bd-9328-f06922e8939a" />
+
+
+
 
 
 <img width="940" height="858" alt="image" src="https://github.com/user-attachments/assets/19a1aff4-39c0-4fcf-a544-d3d04f30b1d7" />
