@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getMember, createMember, updateMember, getPlans, getWhatsAppSubscribeLink } from '../api';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { getMember, createMember, updateMember, getPlans } from '../api';
 import './MemberForm.css';
 
 export default function MemberForm() {
@@ -20,12 +20,6 @@ export default function MemberForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [sendWelcome, setSendWelcome] = useState(true);
-  const [subscribeLink, setSubscribeLink] = useState(null);
-  const [subscribeMessage, setSubscribeMessage] = useState(null);
-  const [showSubscribeCard, setShowSubscribeCard] = useState(false);
-  const [justAddedName, setJustAddedName] = useState('');
-  const [welcomeSent, setWelcomeSent] = useState(false);
 
   useEffect(() => {
     getPlans()
@@ -82,24 +76,8 @@ export default function MemberForm() {
         await updateMember(id, payload);
         navigate('/members');
       } else {
-        const payloadWithWelcome = { ...payload, sendWelcome };
-        const created = await createMember(payloadWithWelcome);
-        setJustAddedName(form.name);
-        setWelcomeSent(!!created.welcomeSent);
-        if (sendWelcome && !created.welcomeSent) {
-          setError(created.welcomeError || 'Welcome message could not be sent. Share the subscribe link below so they can message first.');
-          setShowSubscribeCard(true);
-          const data = await getWhatsAppSubscribeLink().catch((e) => ({ link: null, message: e.message }));
-          if (data.link) setSubscribeLink(data.link);
-          else setSubscribeMessage(data.message || 'Configure META_WHATSAPP_PHONE_NUMBER in backend env to get the wa.me link.');
-        }
-        if (!sendWelcome) {
-          const { link } = await getWhatsAppSubscribeLink().catch(() => ({ link: null }));
-          if (link) {
-            setSubscribeLink(link);
-            setShowSubscribeCard(true);
-          } else navigate('/members');
-        }
+        await createMember({ ...payload, sendWelcome: false });
+        navigate('/members');
       }
     } catch (err) {
       setError(err.message);
@@ -140,6 +118,11 @@ export default function MemberForm() {
                 <option key={p._id} value={p._id}>{p.name} ({p.durationDays}d, ₹{p.price})</option>
               ))}
             </select>
+            {plans.length === 0 && (
+              <p className="form-hint" style={{ marginTop: 6, fontSize: 13, color: '#a1a1aa' }}>
+                No plans yet. <Link to="/plans/new" style={{ color: '#C6F135' }}>Add a plan</Link> first (e.g. Monthly, 30 days, ₹500).
+              </p>
+            )}
           </div>
           <div className="form-row">
             <div className="form-group">
@@ -161,14 +144,6 @@ export default function MemberForm() {
               Active
             </label>
           </div>
-          {!isEdit && (
-            <div className="form-group form-check">
-              <label>
-                <input type="checkbox" checked={sendWelcome} onChange={(e) => setSendWelcome(e.target.checked)} />
-                Send welcome message via WhatsApp (member receives it automatically, no &quot;Hi&quot; needed)
-              </label>
-            </div>
-          )}
           {error && <p className="form-error">{error}</p>}
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={loading}>
@@ -180,29 +155,6 @@ export default function MemberForm() {
           </div>
         </form>
       </div>
-
-      {welcomeSent && (
-        <div className="card form-card subscribe-card">
-          <h3>Welcome message sent</h3>
-          <p><strong>{justAddedName}</strong> received the welcome message on WhatsApp. No need for them to message first — reminders will work automatically.</p>
-          <button type="button" className="btn btn-primary" onClick={() => navigate('/members')}>Done</button>
-        </div>
-      )}
-      {showSubscribeCard && (
-        <div className="card form-card subscribe-card">
-          <h3>Welcome could not be sent</h3>
-          <p>Share this link with <strong>{justAddedName}</strong> so they can message first. After that, reminders will work.</p>
-          {subscribeLink ? (
-            <div className="subscribe-link-row">
-              <input type="text" readOnly value={subscribeLink} className="subscribe-link-input" />
-              <button type="button" className="btn btn-primary" onClick={() => { navigator.clipboard.writeText(subscribeLink); }}>Copy</button>
-            </div>
-          ) : subscribeMessage && (
-            <p className="form-error">{subscribeMessage}</p>
-          )}
-          <button type="button" className="btn btn-secondary" onClick={() => { setSubscribeLink(null); setSubscribeMessage(null); setShowSubscribeCard(false); navigate('/members'); }}>Done</button>
-        </div>
-      )}
     </div>
   );
 }

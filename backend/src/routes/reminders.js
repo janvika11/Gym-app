@@ -4,7 +4,7 @@ import Gym from '../models/Gym.js';
 import ReminderLog from '../models/ReminderLog.js';
 import { authGym } from '../middleware/authGym.js';
 import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
-import { sendReminder } from '../services/whatsapp/index.js';
+import { sendDynamicMessage } from '../services/whatsapp/index.js';
 
 const router = express.Router();
 router.use(authGym);
@@ -20,15 +20,19 @@ function renderBodyTemplate(template, member) {
   const date = member?.endDate
     ? new Date(member.endDate).toLocaleDateString()
     : '';
+  const expiry = date;
+  const plan = member?.plan?.name ?? '';
 
   return safeTemplate
     .replaceAll('{name}', name)
     .replaceAll('{fee}', fee)
-    .replaceAll('{date}', date);
+    .replaceAll('{date}', date)
+    .replaceAll('{expiry}', expiry)
+    .replaceAll('{plan}', plan);
 }
 
 /**
- * Send a single WhatsApp reminder
+ * Send a single WhatsApp reminder (uses approved template for delivery)
  */
 router.post('/send', async (req, res) => {
   try {
@@ -37,7 +41,8 @@ router.post('/send', async (req, res) => {
       return res.status(400).json({ message: 'memberId, title and body required' });
     }
 
-    const filter = { _id: memberId, ...gymFilter(req.admin) };
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    const filter = { _id: memberId, ...(gymFilterFromId(gymId) || gymFilter(req.admin)) };
     const member = await Member.findOne(filter).populate('plan');
     if (!member) return res.status(404).json({ message: 'Member not found' });
     if (!member.phone) return res.status(400).json({ message: 'Member has no phone number' });
@@ -46,10 +51,12 @@ router.post('/send', async (req, res) => {
     const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
 
     const personalizedBody = renderBodyTemplate(body, member);
+    const composedMessage = `*${title}*\n\n${personalizedBody}`;
 
-    const result = await sendReminder(to, title, personalizedBody);
+    const gym = await Gym.findById(gymId).select('whatsapp').lean();
+    const gymWhatsapp = gym?.whatsapp?.phoneNumberId && gym?.whatsapp?.accessToken ? gym.whatsapp : undefined;
 
-    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    const result = await sendDynamicMessage(to, composedMessage, gymWhatsapp);
     await ReminderLog.create({
       gym: gymId,
       member: member._id,
@@ -90,7 +97,7 @@ router.post('/send-bulk', async (req, res) => {
     for (let i = 0; i < memberIds.length; i += BATCH_SIZE) {
       const batchIds = memberIds.slice(i, i + BATCH_SIZE);
       const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
-      const memberFilter = gymFilter(req.admin);
+      const memberFilter = gymFilterFromId(gymId) || gymFilter(req.admin);
       const batchPromises = batchIds.map(async (memberId) => {
         const filter = { _id: memberId, ...memberFilter };
         const member = await Member.findOne(filter).populate('plan');
@@ -112,11 +119,12 @@ router.post('/send-bulk', async (req, res) => {
         const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
 
         const personalizedBody = renderBodyTemplate(body, member);
+        const composedMessage = `*${title}*\n\n${personalizedBody}`;
 
         const gym = await Gym.findById(gymId).select('whatsapp').lean();
         const gymWhatsapp = gym?.whatsapp?.phoneNumberId && gym?.whatsapp?.accessToken ? gym.whatsapp : undefined;
 
-        const result = await sendReminder(to, title, personalizedBody, gymWhatsapp);
+        const result = await sendDynamicMessage(to, composedMessage, gymWhatsapp);
 
         await ReminderLog.create({
           gym: gymId,

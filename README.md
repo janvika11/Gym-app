@@ -406,6 +406,7 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | Token expired | Generate new System User token; update env or Settings |
 | Meta Basic settings won't save | Use correct User Data Deletion URL: `#/privacy#data-deletion` |
 | App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
+| Messages not delivered / template error | Create template in Meta: Name `gym_dynamic_message`, Body `{{1}}` only, Category Utility. Wait for approval. App must be in Live mode. |
 
 ---
 
