@@ -56,7 +56,7 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 | Open | Action |
 |------|--------|
 | [business.facebook.com](https://business.facebook.com) | **WhatsApp Manager** → **Message Templates** |
-| **Create template** | Name: `gym_welcome` |
+| **Create template** | Name: `gym_welcome`, Body: `Hi {{1}}! Welcome to our gym! Your membership is now active...` |
 | | Category: UTILITY or MARKETING |
 | | Body: `{{1}}` (single parameter) |
 | | Language: English |

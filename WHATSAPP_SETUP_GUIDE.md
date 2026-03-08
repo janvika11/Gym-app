@@ -110,12 +110,12 @@ Click **Next**.
 |-------|-------|
 | Category | Utility |
 | Template Name | `gym_welcome` |
-| Body | `{{1}}` (single parameter = full message) |
+| Body | `Hi {{1}}! Welcome to our gym! Your membership is now active...` ({{1}} = member name) |
 | Language | English |
 
 Submit for approval. Wait 24–48 hours.
 
-> ⚠️ **Fix:** The gym app uses `gym_welcome` with body `Message: {{1}}.` (or `Hi! {{1}} 😊`). Use this exact name.
+> ⚠️ **Fix:** The gym app uses `gym_welcome` with body `Hi {{1}}! Welcome to our gym! Your membership is now active...`. Use this exact name and format.
 
 ---
 
