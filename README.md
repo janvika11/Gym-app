@@ -148,7 +148,7 @@ Frontend runs at **http://localhost:5173** (or 3000). It proxies `/api` to the b
 | `META_WHATSAPP_PHONE_NUMBER_ID` | No* | Fallback when gym has no WhatsApp |
 | `META_WHATSAPP_ACCESS_TOKEN` | No* | Fallback access token |
 | `META_WHATSAPP_WELCOME_TEMPLATE_NAME` | No | e.g. `gym_dynamic_message` |
-| `META_WHATSAPP_WELCOME_TEMPLATE_LANG` | No | e.g. `en_US` |
+| `META_WHATSAPP_WELCOME_TEMPLATE_LANG` | No | e.g. `en` (must match template language in Meta) |
 
 \* If gyms connect their own WhatsApp in Settings, env vars are optional.
 
