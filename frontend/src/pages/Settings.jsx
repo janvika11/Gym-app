@@ -94,6 +94,7 @@ export default function Settings() {
             verified: wa.verified || false,
             templateName: wa.templateName || '',
             templateLang: wa.templateLang || '',
+            templateParameterName: wa.templateParameterName || '',
           }));
         }
         setError('');
@@ -252,6 +253,42 @@ export default function Settings() {
             />
           </div>
           <div className="form-group">
+            <label htmlFor="wa-template">Template name (optional)</label>
+            <input
+              id="wa-template"
+              type="text"
+              value={whatsappForm.templateName}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, templateName: e.target.value }))}
+              placeholder="e.g. gym_welcome (must match Meta exactly)"
+            />
+            <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
+              Use {'{{member_name}}'} or {'{{1}}'} in your Meta template. Use <strong>hello_world</strong> while your template is under review.
+            </p>
+          </div>
+          <div className="form-group">
+            <label htmlFor="wa-lang">Template language (optional)</label>
+            <input
+              id="wa-lang"
+              type="text"
+              value={whatsappForm.templateLang}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, templateLang: e.target.value }))}
+              placeholder="e.g. en or en_US (must match Meta)"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="wa-param">Parameter name (optional)</label>
+            <input
+              id="wa-param"
+              type="text"
+              value={whatsappForm.templateParameterName}
+              onChange={(e) => setWhatsappForm((p) => ({ ...p, templateParameterName: e.target.value }))}
+              placeholder="e.g. name (must match {{name}} in Meta template)"
+            />
+            <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
+              Use <strong>name</strong> for {'{{name}}'} templates. Leave blank for default (name).
+            </p>
+          </div>
+          <div className="form-group">
             <label htmlFor="wa-waba">Business Account ID (optional)</label>
             <input
               id="wa-waba"
@@ -269,29 +306,6 @@ export default function Settings() {
               value={whatsappForm.phoneNumber}
               onChange={(e) => setWhatsappForm((p) => ({ ...p, phoneNumber: e.target.value }))}
               placeholder="e.g. +91 9876543210"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="wa-template">Template name (optional)</label>
-            <input
-              id="wa-template"
-              type="text"
-              value={whatsappForm.templateName}
-              onChange={(e) => setWhatsappForm((p) => ({ ...p, templateName: e.target.value }))}
-              placeholder="e.g. gym_welcome (must match Meta exactly)"
-            />
-            <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
-              Use {'{{member_name}}'} or {'{{1}}'} in your Meta template. Leave blank to use default.
-            </p>
-          </div>
-          <div className="form-group">
-            <label htmlFor="wa-lang">Template language (optional)</label>
-            <input
-              id="wa-lang"
-              type="text"
-              value={whatsappForm.templateLang}
-              onChange={(e) => setWhatsappForm((p) => ({ ...p, templateLang: e.target.value }))}
-              placeholder="e.g. en or en_US (must match Meta)"
             />
           </div>
           {whatsapp.connected && (

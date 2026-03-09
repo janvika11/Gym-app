@@ -16,7 +16,7 @@ router.post('/connect-whatsapp', authGym, async (req, res) => {
     const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
     if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
 
-    const { phoneNumberId, accessToken, businessAccountId, phoneNumber, verified, templateName, templateLang } = req.body;
+    const { phoneNumberId, accessToken, businessAccountId, phoneNumber, verified, templateName, templateLang, templateParameterName } = req.body;
     if (!phoneNumberId || !accessToken) {
       return res.status(400).json({ message: 'phoneNumberId and accessToken are required' });
     }
@@ -51,6 +51,7 @@ router.post('/connect-whatsapp', authGym, async (req, res) => {
           verified: gym.whatsapp?.verified,
           templateName: gym.whatsapp?.templateName,
           templateLang: gym.whatsapp?.templateLang,
+          templateParameterName: gym.whatsapp?.templateParameterName,
         },
       },
     });
@@ -80,6 +81,7 @@ router.get('/whatsapp-status', authGym, async (req, res) => {
       verified: wa.verified || false,
       templateName: wa.templateName || null,
       templateLang: wa.templateLang || null,
+      templateParameterName: wa.templateParameterName || null,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

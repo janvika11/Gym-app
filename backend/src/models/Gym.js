@@ -18,6 +18,7 @@ const gymSchema = new mongoose.Schema(
       verified: { type: Boolean, default: false },
       templateName: { type: String },
       templateLang: { type: String },
+      templateParameterName: { type: String }, // e.g. "name" for {{name}}, "1" for {{1}}
     },
   },
   { timestamps: true }
