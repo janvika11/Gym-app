@@ -305,6 +305,17 @@ Add a test member (Name: Rahul, Phone: 919876543210), check **Send welcome messa
 
 ## Admin Guide – How to Use the App
 
+### WhatsApp Template Setup (for new admins)
+
+Each admin can use their own Meta template. No code changes needed.
+
+1. **Create template in Meta** – [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates) → Create Template
+2. **Rule:** Use exactly one variable `{{1}}` in the body (e.g. `Message: {{1}}.` or `Hi {{1}}! Welcome...`)
+3. **In the app:** Settings → Connect WhatsApp Business → enter **Template name** and **Template language** (`en` or `en_US`) → Save
+
+---
+
+
 ### Dashboard
 
 - View active members, revenue, pending dues

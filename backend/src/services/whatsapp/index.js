@@ -132,15 +132,17 @@ export async function sendWelcomeTemplate(to, memberName) {
  * {{1}} = member name only.
  */
 export async function sendWelcomeMessage(to, memberName, customMessage, gymName = '', gymWhatsapp) {
-  const templateName = process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME
+  const templateName = gymWhatsapp?.templateName
+    || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME
     || process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME
     || 'gym_welcome';
+  const lang = gymWhatsapp?.templateLang || process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en';
 
   if (templateName === 'hello_world') {
     return sendTemplate(to, 'hello_world', 'en_US', [], gymWhatsapp);
   }
 
-  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en', [
+  return sendTemplate(to, templateName, lang, [
     { type: 'body', parameters: [{ type: 'text', text: String(memberName || '') }] },
   ], gymWhatsapp);
 }
