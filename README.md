@@ -168,6 +168,14 @@ Each gym can use its **own WhatsApp Business number**. Messages (welcome, remind
 | 4 | Same form | Paste **Phone Number ID** and **Access Token** → **Save** |
 | 5 | After Meta approves | Check **Mark as verified (Meta approved)** → Save again |
 
+### Template name & language (per gym)
+
+In **Settings → Connect WhatsApp Business**, you can optionally set:
+- **Template name** – Your Meta template name (e.g. `gym_welcome`). Use `{{1}}` in the body. Leave blank for default.
+- **Template language** – `en` or `en_US` to match Meta. Leave blank for default.
+
+Each gym can use its own template without code changes.
+
 ### What Happens After You Connect
 
 - **Welcome messages** (new members) → sent from your gym's number

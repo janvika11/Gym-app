@@ -16,6 +16,8 @@ const gymSchema = new mongoose.Schema(
       accessToken: { type: String },
       phoneNumber: { type: String },
       verified: { type: Boolean, default: false },
+      templateName: { type: String },
+      templateLang: { type: String },
     },
   },
   { timestamps: true }

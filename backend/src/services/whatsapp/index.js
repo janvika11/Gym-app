@@ -140,7 +140,7 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
     return sendTemplate(to, 'hello_world', 'en_US', [], gymWhatsapp);
   }
 
-  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US', [
+  return sendTemplate(to, templateName, process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en', [
     { type: 'body', parameters: [{ type: 'text', text: String(memberName || '') }] },
   ], gymWhatsapp);
 }
@@ -149,10 +149,14 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
  * Send dynamic message (expiry, fee, inactive, compose).
  * Uses gym_welcome template: "Hi {{1}}! Welcome to our gym! Your membership is now active..."
  * For reminders we send full message as {{1}} – output wraps it.
+ * Template name and language can be set per-gym in Settings.
  */
 export async function sendDynamicMessage(to, composedMessage, gymWhatsapp) {
-  const templateName = process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME || 'gym_welcome';
-  const lang = process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en_US';
+  const templateName = gymWhatsapp?.templateName
+    || process.env.META_WHATSAPP_DYNAMIC_TEMPLATE_NAME
+    || process.env.META_WHATSAPP_WELCOME_TEMPLATE_NAME
+    || 'gym_welcome';
+  const lang = gymWhatsapp?.templateLang || process.env.META_WHATSAPP_WELCOME_TEMPLATE_LANG || 'en';
   return sendTemplate(to, templateName, lang, [
     { type: 'body', parameters: [{ type: 'text', text: String(composedMessage || '') }] },
   ], gymWhatsapp);
