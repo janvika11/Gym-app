@@ -16,7 +16,7 @@ const DEFAULT_REMINDER_LANGUAGE_CODE =
  */
 export function getWhatsAppConfig() {
   const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
-  const accessToken = process.env.META_WHATSAPP_ACCESS_TOKEN;
+  const accessToken = (process.env.META_WHATSAPP_ACCESS_TOKEN || '').replace(/\s/g, '');
   const baseUrl = process.env.META_WHATSAPP_BASE_URL ?? DEFAULT_BASE_URL;
 
   if (!phoneNumberId || !accessToken) {
@@ -34,9 +34,10 @@ export function getWhatsAppConfig() {
  */
 function resolveConfig(gymWhatsapp) {
   if (gymWhatsapp?.phoneNumberId && gymWhatsapp?.accessToken) {
+    const token = String(gymWhatsapp.accessToken).replace(/\s/g, '');
     return {
       phoneNumberId: gymWhatsapp.phoneNumberId,
-      accessToken: gymWhatsapp.accessToken,
+      accessToken: token,
       baseUrl: process.env.META_WHATSAPP_BASE_URL ?? DEFAULT_BASE_URL,
     };
   }
@@ -88,15 +89,39 @@ export async function sendText(to, text, gymWhatsapp) {
 }
 
 /**
+ * Sanitize template parameter text (Meta rejects newlines, tabs, >4 consecutive spaces)
+ */
+function sanitizeParamText(text) {
+  return String(text || '')
+    .replace(/\r?\n|\r|\t/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .slice(0, 1024);
+}
+
+/**
  * Send template message (approved templates)
  */
 export async function sendTemplate(to, templateName, languageCode = 'en', components = [], gymWhatsapp) {
+  const sanitized = components.map((c) => {
+    if (c.type === 'body' && c.parameters) {
+      return {
+        ...c,
+        parameters: c.parameters.map((p) =>
+          p.type === 'text'
+            ? { ...p, text: sanitizeParamText(p.text) }
+            : p
+        ),
+      };
+    }
+    return c;
+  });
   return sendWhatsAppMessage(to, {
     type: 'template',
     template: {
       name: templateName,
       language: { code: languageCode },
-      ...(components.length ? { components } : {}),
+      ...(sanitized.length ? { components: sanitized } : {}),
     },
   }, gymWhatsapp);
 }

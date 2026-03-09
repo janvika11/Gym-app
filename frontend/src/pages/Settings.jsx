@@ -150,6 +150,8 @@ export default function Settings() {
         businessAccountId: whatsappForm.businessAccountId.trim() || undefined,
         phoneNumber: whatsappForm.phoneNumber.trim() || undefined,
         verified: whatsappForm.verified,
+        templateName: whatsappForm.templateName?.trim() || undefined,
+        templateLang: whatsappForm.templateLang?.trim() || undefined,
       });
       const wa = await getGymWhatsAppStatus();
       setWhatsapp(wa);
@@ -279,7 +281,7 @@ export default function Settings() {
               placeholder="e.g. gym_welcome (must match Meta exactly)"
             />
             <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
-              Use {{1}} in your Meta template. Leave blank to use default.
+              Use {{member_name}} or {{1}} in your Meta template. Leave blank to use default.
             </p>
           </div>
           <div className="form-group">

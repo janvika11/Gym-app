@@ -26,7 +26,7 @@ router.post('/connect-whatsapp', authGym, async (req, res) => {
       {
         $set: {
           'whatsapp.phoneNumberId': String(phoneNumberId).trim(),
-          'whatsapp.accessToken': String(accessToken).trim(),
+          'whatsapp.accessToken': String(accessToken).replace(/\s/g, ''),
           ...(businessAccountId != null && { 'whatsapp.businessAccountId': String(businessAccountId).trim() }),
           ...(phoneNumber != null && { 'whatsapp.phoneNumber': String(phoneNumber).trim() }),
           'whatsapp.verified': verified === true,
