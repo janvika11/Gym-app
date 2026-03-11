@@ -4,6 +4,7 @@ import Gym from '../models/Gym.js';
 import ReminderLog from '../models/ReminderLog.js';
 import { authGym } from '../middleware/authGym.js';
 import { gymFilter, gymFilterFromId } from '../utils/gymFilter.js';
+import { toE164 } from '../utils/phone.js';
 import { sendDynamicMessage } from '../services/whatsapp/index.js';
 
 const router = express.Router();
@@ -47,8 +48,8 @@ router.post('/send', async (req, res) => {
     if (!member) return res.status(404).json({ message: 'Member not found' });
     if (!member.phone) return res.status(400).json({ message: 'Member has no phone number' });
 
-    const phoneDigits = member.phone.replace(/\D/g, '').replace(/^0+/, '');
-    const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
+    const to = toE164(member.phone);
+    if (!to) return res.status(400).json({ message: 'Invalid phone number' });
 
     const personalizedBody = renderBodyTemplate(body, member);
     const composedMessage = `*${title}*\n\n${personalizedBody}`;
@@ -73,7 +74,7 @@ router.post('/send', async (req, res) => {
       return res.status(400).json({ message: result.error || 'WhatsApp send failed' });
     }
 
-    res.json({ success: true, messageId: result.messageId });
+    res.json({ success: true, messageId: result.messageId, sentTo: to });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -115,8 +116,20 @@ router.post('/send-bulk', async (req, res) => {
           return { memberId, success: false, error: 'No phone number' };
         }
 
-        const phoneDigits = member.phone.replace(/\D/g, '').replace(/^0+/, '');
-        const to = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
+        const to = toE164(member.phone);
+        if (!to) {
+          await ReminderLog.create({
+            gym: gymId,
+            member: member._id,
+            memberName: member.name,
+            phone: member.phone,
+            title,
+            body,
+            status: 'failed',
+            errorMessage: 'Invalid phone number',
+          });
+          return { memberId, success: false, error: 'Invalid phone number' };
+        }
 
         const personalizedBody = renderBodyTemplate(body, member);
         const composedMessage = `*${title}*\n\n${personalizedBody}`;

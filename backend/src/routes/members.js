@@ -5,6 +5,7 @@ import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
 import MessageTemplate from '../models/MessageTemplate.js';
 import { authGym } from '../middleware/authGym.js';
+import { toE164 } from '../utils/phone.js';
 import { sendWelcomeMessage } from '../services/whatsapp/index.js';
 
 const router = express.Router();
@@ -68,19 +69,20 @@ router.post('/bulk', async (req, res) => {
         created.push(member);
         if (sendWelcome && member.phone) {
           try {
-            const digits = String(member.phone).replace(/\D/g, '').replace(/^0+/, '');
-            const to = digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
-            const gym = await Gym.findById(gymId);
-            const settings = await GymSettings.findOne({ gym: gymId });
-            const template = await MessageTemplate.findOne({ gym: gymId, type: 'WELCOME' });
-            const welcomeMsg = template?.content || settings?.welcomeMessage || gym?.welcomeMessage || null;
-            const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name, gym?.whatsapp);
-            await Member.findByIdAndUpdate(member._id, {
-              welcomeSent: result.success,
-              welcomeError: result.success ? undefined : (result.error || 'Failed'),
-            });
+            const to = toE164(member.phone);
+            if (to) {
+              const gym = await Gym.findById(gymId);
+              const settings = await GymSettings.findOne({ gym: gymId });
+              const template = await MessageTemplate.findOne({ gym: gymId, type: 'WELCOME' });
+              const welcomeMsg = template?.content || settings?.welcomeMessage || gym?.welcomeMessage || null;
+              const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name, gym?.whatsapp);
+              await Member.findByIdAndUpdate(member._id, {
+                welcomeSent: result.success,
+                welcomeError: result.success ? undefined : (result.error || 'Failed'),
+              });
+            }
           } catch (e) {
-            console.error('Welcome failed for', to, e.message);
+            console.error('Welcome failed for', member.phone, e.message);
           }
         }
       } catch (e) {
@@ -128,21 +130,22 @@ router.post('/', async (req, res) => {
 
     if (sendWelcome && member.phone) {
       try {
-        const digits = String(member.phone).replace(/\D/g, '').replace(/^0+/, '');
-        const to = digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
-        const gym = await Gym.findById(gymId);
+        const to = toE164(member.phone);
+        if (to) {
+          const gym = await Gym.findById(gymId);
         const settings = await GymSettings.findOne({ gym: gymId });
         const template = await MessageTemplate.findOne({ gym: gymId, type: 'WELCOME' });
         const welcomeMsg = template?.content || settings?.welcomeMessage || gym?.welcomeMessage || null;
-        const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name);
-        member.welcomeSent = result.success;
-        member.welcomeError = result.success ? undefined : (result.error || 'Failed');
-        await Member.findByIdAndUpdate(member._id, {
-          welcomeSent: result.success,
-          welcomeError: result.success ? undefined : (result.error || 'Failed'),
-        });
-        if (!result.success) {
-          console.error('Welcome WhatsApp failed:', result.error, 'to:', to);
+          const result = await sendWelcomeMessage(to, member.name, welcomeMsg, gym?.name, gym?.whatsapp);
+          member.welcomeSent = result.success;
+          member.welcomeError = result.success ? undefined : (result.error || 'Failed');
+          await Member.findByIdAndUpdate(member._id, {
+            welcomeSent: result.success,
+            welcomeError: result.success ? undefined : (result.error || 'Failed'),
+          });
+          if (!result.success) {
+            console.error('Welcome WhatsApp failed:', result.error, 'to:', to);
+          }
         }
       } catch (e) {
         console.error('Welcome WhatsApp failed:', e.message);
@@ -199,14 +202,14 @@ router.post('/:id/remind', async (req, res) => {
       .replaceAll('{fee}', member.plan?.price ?? '')
       .replaceAll('{date}', expiryStr);
 
-    const digits = String(member.phone).replace(/\D/g, '').replace(/^0+/, '');
-    const to = digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
+    const to = toE164(member.phone);
+    if (!to) return res.status(400).json({ message: 'Invalid phone number' });
 
     const result = await sendDynamicMessage(to, composed, gym?.whatsapp);
     if (!result.success) {
       return res.status(400).json({ message: result.error || 'Failed to send reminder' });
     }
-    res.json({ success: true, messageId: result.messageId });
+    res.json({ success: true, messageId: result.messageId, sentTo: to });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

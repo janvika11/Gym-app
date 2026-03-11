@@ -54,10 +54,11 @@ export async function sendWhatsAppMessage(to, message, gymWhatsapp) {
   const { phoneNumberId, accessToken, baseUrl } = resolveConfig(gymWhatsapp);
   const url = `${baseUrl}/${phoneNumberId}/messages`;
 
+  const e164 = String(to).replace(/\D/g, '');
   const body = {
     messaging_product: 'whatsapp',
     recipient_type: 'individual',
-    to: to.replace(/\D/g, ''), // sanitize
+    to: e164,
     ...message,
   };
 

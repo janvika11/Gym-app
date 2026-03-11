@@ -1,4 +1,4 @@
-const PRODUCTION_API = 'https://gym-app-2muj.onrender.com/api';
+const PRODUCTION_API = import.meta.env.VITE_API_BASE_URL || 'https://gym-app-2muj.onrender.com/api';
 const isLocalhost = typeof window !== 'undefined' && /localhost|127\.0\.0\.1/.test(window.location.hostname);
 const API_BASE = isLocalhost ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api') : PRODUCTION_API;
 
@@ -13,25 +13,35 @@ function headers() {
   return h;
 }
 
+async function fetchApi(url, options) {
+  try {
+    const res = await fetch(url, options);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || 'Request failed');
+    return data;
+  } catch (err) {
+    if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+      throw new Error('Cannot reach server. Check your connection. If using Render free tier, wait 30–60 seconds and try again.');
+    }
+    throw err;
+  }
+}
+
 export async function signup(gymName, email, password, name) {
-  const res = await fetch(`${API_BASE}/auth/signup`, {
+  const data = await fetchApi(`${API_BASE}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ gymName, email, password, name }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Signup failed');
   return data;
 }
 
 export async function login(email, password) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
+  const data = await fetchApi(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Login failed');
   return data;
 }
 

@@ -188,7 +188,7 @@ export default function Members() {
     setSending(true);
     try {
       await sendReminder(selected._id, 'Gym Reminder', reminderMsg.trim());
-      alert('WhatsApp reminder triggered for this member (check Meta sandbox).');
+      alert('WhatsApp reminder sent successfully');
     } catch (e) {
       alert(e.message || 'Failed to send reminder');
     } finally {

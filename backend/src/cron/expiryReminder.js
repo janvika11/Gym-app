@@ -3,17 +3,8 @@ import Member from '../models/Member.js';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
 import MessageTemplate from '../models/MessageTemplate.js';
+import { toE164 } from '../utils/phone.js';
 import { sendDynamicMessage } from '../services/whatsapp/index.js';
-
-function normalizePhone(phone) {
-  const digits = String(phone || '').replace(/\D/g, '').replace(/^0+/, '').replace(/^91/, '');
-  return digits.slice(-10);
-}
-
-function toE164(phone) {
-  const digits = normalizePhone(phone);
-  return digits.length === 10 ? `91${digits}` : digits.startsWith('91') ? digits : `91${digits}`;
-}
 
 /**
  * Get tomorrow's date range (start and end of day) in local time.
