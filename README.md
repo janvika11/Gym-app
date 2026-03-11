@@ -260,7 +260,8 @@ Click **Save Changes**.
    Click **Next**.
 
 5.  Phone verification** – Enter OTP sent via SMS or WhatsApp
-6.  Display name review** – Status may show Pending (5 min–24 hrs) or Approved
+6.  **Payment Method (Mandatory for Live)** – Go to **WhatsApp Manager > Settings > Payment**, add a card, and ensure it is set as the **Default** payment method for this specific WhatsApp account.
+7.  Display name review** – Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
 
@@ -274,7 +275,7 @@ Click **Save Changes**.
 1. Open [business.facebook.com/settings/system-users](https://business.facebook.com/settings/system-users)
 2. Create system user (or use existing), Role: Admin, assign WhatsApp account
 3. **Generate Token** → Select your app
-4. Permissions: `whatsapp_business_messaging`, `whatsapp_business_management`
+4. Permissions: `whatsapp_business_messaging`, `whatsapp_business_management`, and **`business_management`** (Search for this to ensure billing status syncs).
 5. Copy the token (expires every 60 days)
 
 ### Step 8 — Copy API Credentials
@@ -300,6 +301,20 @@ Open **developers.facebook.com → Your App → WhatsApp → API Setup** and cop
 ### Step 11 — Test the Integration
 
 Add a test member (Name: Rahul, Phone: 919876543210), check **Send welcome message**, and save. The system will send welcome messages, membership reminders, payment alerts, and expiry reminders.
+
+### Step 12 — Final Activation (The "Postman" Fix)
+If your status shows "Pending" or you get an "Unsupported POST Request" error even after adding a card, you must manually register the number via API:
+
+1. **Open Postman** (or any API tool).
+2. **Method:** `POST`
+3. **URL:** `https://graph.facebook.com/v18.0/{{YOUR_PHONE_NUMBER_ID}}/register`
+4. **Auth:** Bearer Token (Your System User Token).
+5. **Body (JSON):**
+   ```json
+   {
+     "messaging_product": "whatsapp",
+     "pin": "123456"
+   }
 
 ---
 
