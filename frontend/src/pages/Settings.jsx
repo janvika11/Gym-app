@@ -317,25 +317,24 @@ export default function Settings() {
             <>
               <div className="form-group">
                 <label
-                  htmlFor="wa-verified"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 0,
-                    cursor: 'pointer',
-                    justifyContent: 'flex-start',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  <input
-                    id="wa-verified"
-                    type="checkbox"
-                    checked={whatsappForm.verified}
-                    onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
-                  />
-                  <span style={{ display: 'inline-block' }}>Mark as verified (Meta approved)</span>
-                </label>
+  htmlFor="wa-verified"
+  style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    cursor: 'pointer',
+    marginBottom: 0,
+  }}
+>
+  <input
+    id="wa-verified"
+    type="checkbox"
+    checked={whatsappForm.verified}
+    onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
+    style={{ margin: 0 }}
+  />
+  Mark as verified (Meta approved)
+</label>
               </div>
               <p className="settings-success" style={{ marginBottom: 12 }}>
                 Connected {whatsapp.verified ? '✓ Verified' : '(Pending verification in Meta)'}
