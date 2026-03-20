@@ -261,7 +261,7 @@ Click **Save Changes**.
 
 5.  Phone verification** – Enter OTP sent via SMS or WhatsApp
 6.  **Payment Method (Mandatory for Live)** – Go to **WhatsApp Manager > Settings > Payment**, add a card, and ensure it is set as the **Default** payment method for this specific WhatsApp account.
-7.  Next in business settings > Accounts > Whatsapp accounts > Settings > Click on start verification below and complete the **Buisiness verification** by filling required details and uploading any required documents.
+7.  Next in business settings > Accounts > Whatsapp accounts > Settings > Click on start verification below and complete the **Business verification** by filling required details and uploading any required documents.
 8.  Display name review** – Status may show Pending (5 min–24 hrs) or Approved
 
 ### Step 6 — Create Message Template
