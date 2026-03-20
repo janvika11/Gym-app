@@ -64,6 +64,7 @@ export default function Settings() {
     verified: false,
     templateName: '',
     templateLang: '',
+    templateParameterName: '',
   });
   const [whatsappForm, setWhatsappForm] = useState({
     phoneNumberId: '',
@@ -73,9 +74,12 @@ export default function Settings() {
     verified: false,
     templateName: '',
     templateLang: '',
+    templateParameterName: '',
   });
   const [whatsappSaving, setWhatsappSaving] = useState(false);
   const [gymHoursSaving, setGymHoursSaving] = useState(false);
+  const [testPhone, setTestPhone] = useState('');
+  const [testSending, setTestSending] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -153,6 +157,7 @@ export default function Settings() {
         verified: whatsappForm.verified,
         templateName: whatsappForm.templateName?.trim() || undefined,
         templateLang: whatsappForm.templateLang?.trim() || undefined,
+        templateParameterName: whatsappForm.templateParameterName?.trim() || undefined,
       });
       const wa = await getGymWhatsAppStatus();
       setWhatsapp(wa);
@@ -310,18 +315,65 @@ export default function Settings() {
           </div>
           {whatsapp.connected && (
             <>
-              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input
-                  id="wa-verified"
-                  type="checkbox"
-                  checked={whatsappForm.verified}
-                  onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
-                />
-                <label htmlFor="wa-verified" style={{ marginBottom: 0 }}>Mark as verified (Meta approved)</label>
+              <div className="form-group">
+                <label
+                  htmlFor="wa-verified"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    marginBottom: 0,
+                    cursor: 'pointer',
+                    justifyContent: 'flex-start',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <input
+                    id="wa-verified"
+                    type="checkbox"
+                    checked={whatsappForm.verified}
+                    onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
+                  />
+                  <span style={{ display: 'inline-block' }}>Mark as verified (Meta approved)</span>
+                </label>
               </div>
               <p className="settings-success" style={{ marginBottom: 12 }}>
                 Connected {whatsapp.verified ? '✓ Verified' : '(Pending verification in Meta)'}
               </p>
+              <div className="form-group" style={{ marginTop: 16 }}>
+                <label>Test connection</label>
+                <p className="settings-hint" style={{ marginBottom: 8, fontSize: 12 }}>
+                  Enter your WhatsApp number (e.g. 7680010741) and click Send. You should receive a "Hello World" message.
+                </p>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    placeholder="Your phone: 7680010741"
+                    style={{ width: 180, padding: '0.5rem 0.75rem', background: '#27272a', border: '1px solid #3f3f46', borderRadius: 6, color: '#e4e4e7' }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    disabled={testSending || !testPhone.trim()}
+                    onClick={async () => {
+                      setTestSending(true);
+                      setError('');
+                      try {
+                        await testWhatsApp(testPhone.trim());
+                        setSuccess('Test message sent! Check your WhatsApp.');
+                      } catch (e) {
+                        setError(e.message || 'Test failed');
+                      } finally {
+                        setTestSending(false);
+                      }
+                    }}
+                  >
+                    {testSending ? 'Sending...' : 'Send test message'}
+                  </button>
+                </div>
+              </div>
             </>
           )}
           <button type="submit" className="btn btn-primary" disabled={whatsappSaving}>

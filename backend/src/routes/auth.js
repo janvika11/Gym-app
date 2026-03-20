@@ -1,9 +1,11 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import Admin from '../models/Admin.js';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
 import { authGym } from '../middleware/authGym.js';
+import PasswordResetToken from '../models/PasswordResetToken.js';
 
 const router = express.Router();
 
@@ -68,6 +70,93 @@ router.post('/login', async (req, res) => {
       });
     }
     return res.status(401).json({ message: 'Invalid email or password' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * Forgot password (dev-friendly: returns reset token in response).
+ * POST /api/auth/forgot-password
+ * Body: { email }
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const admin = await Admin.findOne({ email });
+    const gym = await Gym.findOne({ email });
+
+    if (!admin && !gym) {
+      return res.status(404).json({ message: 'No account found for this email' });
+    }
+
+    const userType = admin ? 'admin' : 'gym';
+    const userId = admin ? admin._id : gym._id;
+
+    // Replace any previous reset tokens for this user/email.
+    await PasswordResetToken.deleteMany({ email, userType });
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 min
+
+    await PasswordResetToken.create({
+      email,
+      userType,
+      userId,
+      tokenHash,
+      expiresAt,
+    });
+
+    // NOTE: For real production you should email this token instead of returning it.
+    res.json({ success: true, resetToken, expiresInMinutes: 30 });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * Reset password.
+ * POST /api/auth/reset-password
+ * Body: { email, resetToken, newPassword }
+ */
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, resetToken, newPassword } = req.body;
+    if (!email || !resetToken || !newPassword) {
+      return res.status(400).json({ message: 'email, resetToken and newPassword are required' });
+    }
+    if (String(newPassword).length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(String(resetToken)).digest('hex');
+    const tokenDoc = await PasswordResetToken.findOne({
+      email,
+      tokenHash,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!tokenDoc) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    if (tokenDoc.userType === 'admin') {
+      const admin = await Admin.findById(tokenDoc.userId);
+      if (!admin) return res.status(404).json({ message: 'Account not found' });
+      admin.password = newPassword;
+      await admin.save();
+    } else {
+      const gym = await Gym.findById(tokenDoc.userId);
+      if (!gym) return res.status(404).json({ message: 'Account not found' });
+      gym.password = newPassword;
+      await gym.save();
+    }
+
+    await PasswordResetToken.deleteMany({ email, userType: tokenDoc.userType });
+    res.json({ success: true, message: 'Password updated. You can now sign in.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

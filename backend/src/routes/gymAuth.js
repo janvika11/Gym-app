@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import Gym from '../models/Gym.js';
 import GymSettings from '../models/GymSettings.js';
 import { authGym } from '../middleware/authGym.js';
+import { sendTemplate } from '../services/whatsapp/index.js';
+import { toE164 } from '../utils/phone.js';
 
 const router = express.Router();
 
@@ -32,6 +34,9 @@ router.post('/connect-whatsapp', authGym, async (req, res) => {
           'whatsapp.verified': verified === true,
           ...(templateName != null && templateName !== '' && { 'whatsapp.templateName': String(templateName).trim() }),
           ...(templateLang != null && templateLang !== '' && { 'whatsapp.templateLang': String(templateLang).trim() }),
+          ...(templateParameterName != null && templateParameterName !== '' && {
+            'whatsapp.templateParameterName': String(templateParameterName).trim(),
+          }),
         },
       },
       { new: true }
@@ -55,6 +60,37 @@ router.post('/connect-whatsapp', authGym, async (req, res) => {
         },
       },
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * Send a test WhatsApp message to verify connection.
+ * POST /api/gyms/test-whatsapp
+ * Body: { phone: "7680010741" }
+ */
+router.post('/test-whatsapp', authGym, async (req, res) => {
+  try {
+    const gymId = req.gymId || req.admin?.gym?._id || req.admin?.gym;
+    if (!gymId) return res.status(400).json({ message: 'No gym assigned' });
+
+    const { phone } = req.body;
+    if (!phone) return res.status(400).json({ message: 'Phone number required' });
+
+    const gym = await Gym.findById(gymId).select('whatsapp').lean();
+    if (!gym?.whatsapp?.phoneNumberId || !gym?.whatsapp?.accessToken) {
+      return res.status(400).json({ message: 'Connect WhatsApp first in Settings' });
+    }
+
+    const to = toE164(phone);
+    if (!to) return res.status(400).json({ message: 'Invalid phone number' });
+
+    const result = await sendTemplate(to, 'hello_world', 'en_US', [], gym.whatsapp);
+    if (!result.success) {
+      return res.status(400).json({ message: result.error || 'WhatsApp send failed' });
+    }
+    res.json({ success: true, message: 'Test message sent! Check your WhatsApp.', sentTo: to });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

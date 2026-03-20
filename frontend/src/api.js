@@ -45,6 +45,24 @@ export async function login(email, password) {
   return data;
 }
 
+export async function forgotPassword(email) {
+  const data = await fetchApi(`${API_BASE}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  return data;
+}
+
+export async function resetPassword(email, resetToken, newPassword) {
+  const data = await fetchApi(`${API_BASE}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, resetToken, newPassword }),
+  });
+  return data;
+}
+
 export async function getMe() {
   const res = await fetch(`${API_BASE}/auth/me`, { headers: headers() });
   const data = await res.json();
@@ -344,5 +362,16 @@ export async function connectGymWhatsApp(body) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Failed to connect WhatsApp');
+  return data;
+}
+
+export async function testWhatsApp(phone) {
+  const res = await fetch(`${API_BASE}/gyms/test-whatsapp`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify({ phone }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Test failed');
   return data;
 }

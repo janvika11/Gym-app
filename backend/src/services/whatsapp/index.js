@@ -52,7 +52,8 @@ function resolveConfig(gymWhatsapp) {
  */
 export async function sendWhatsAppMessage(to, message, gymWhatsapp) {
   const { phoneNumberId, accessToken, baseUrl } = resolveConfig(gymWhatsapp);
-  const url = `${baseUrl}/${phoneNumberId}/messages`;
+  const base = String(baseUrl || '').replace(/\/+$/, '');
+  const url = `${base}/${phoneNumberId}/messages`;
 
   const e164 = String(to).replace(/\D/g, '');
   const body = {

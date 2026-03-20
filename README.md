@@ -439,6 +439,19 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
 | Messages not delivered / template error | Create template in Meta: Name `gym_welcome`, Body `Hi {{1}}! Welcome to our gym! Your membership is now active...`, Category Utility. Wait for approval. App must be in Live mode. |
 
+### Sandbox vs Live Mode
+
+If the app shows "Sandbox" in an alert, that's just a label in the code. To ensure messages actually deliver in **Live mode**:
+
+1. **Token permissions** – When generating the System User token, select **all 3**:
+   - `whatsapp_business_management`
+   - `whatsapp_business_messaging`
+   - `business_management` ← often missed; required for full Live delivery
+
+2. **Use approved templates** – Outbound messages to members who haven't messaged you first **must** use an approved template (e.g. `gym_welcome`). Free-text messages only work within 24 hours of the member's last message.
+
+3. **Quick test** – Send "Hi" from your personal phone to the gym's WhatsApp Business number. Then click **Remind** in the app. If it works, your setup is correct.
+
 ---
 
 ## Project Structure
