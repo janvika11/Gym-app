@@ -30,16 +30,16 @@ export default function Signup() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Gym Admin</h1>
-        <p className="login-sub">Create your gym account</p>
+        <h1>Business Admin</h1>
+        <p className="login-sub">Create your business account</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Gym name *</label>
+            <label>Business name *</label>
             <input
               type="text"
               value={gymName}
               onChange={(e) => setGymName(e.target.value)}
-              placeholder="My Fitness Gym"
+              placeholder="My Business"
               required
             />
           </div>
@@ -58,7 +58,7 @@ export default function Signup() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@gym.com"
+              placeholder="admin@business.com"
               required
               autoComplete="email"
             />

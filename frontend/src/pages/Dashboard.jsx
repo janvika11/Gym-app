@@ -111,7 +111,7 @@ export default function Dashboard() {
         <>
           {gymHours && (
             <div className="dash-gym-hours">
-              <span className="dash-gym-hours-label">Gym hours</span>
+              <span className="dash-gym-hours-label">Business hours</span>
               <span className="dash-gym-hours-value">
                 {formatTime(gymHours.opening)} – {formatTime(gymHours.closing)}
               </span>

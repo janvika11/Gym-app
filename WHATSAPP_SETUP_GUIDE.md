@@ -1,6 +1,6 @@
-# WhatsApp Cloud API Setup (Gym SaaS Platform)
+# WhatsApp Cloud API Setup (Business SaaS Platform)
 
-This guide explains how to connect a WhatsApp Business number to the Gym Management System.
+This guide explains how to connect a WhatsApp Business number to the Business Management System.
 
 **Platform URL:** [https://gym-app-three-mu.vercel.app](https://gym-app-three-mu.vercel.app/)
 
@@ -67,12 +67,12 @@ This opens a wizard. Complete all steps in order:
 
 ### 5a. Enter phone number
 - Enter your WhatsApp Business number (e.g. +91XXXXXXXXXX)
-- This becomes the **FROM** number that sends messages to gym members
+- This becomes the **FROM** number that sends messages to business customers
 
 ### 5b. Business information
 | Field | Value |
 |-------|-------|
-| Business Name | Your gym name (e.g. PowerFit Gym) |
+| Business Name | Your business name (e.g. PowerFit Gym) |
 | Business Website | `https://gym-app-three-mu.vercel.app` |
 | Country | Select your country |
 | Address | Optional |
@@ -83,8 +83,8 @@ Click **Next**.
 ### 5c. WhatsApp Business Profile
 | Field | Value |
 |-------|-------|
-| Display Name | Your gym name |
-| Category | Fitness / Gym |
+| Display Name | Your business name |
+| Category | Business |
 | Description | Optional |
 
 Click **Next**.
@@ -110,12 +110,12 @@ Click **Next**.
 |-------|-------|
 | Category | Utility |
 | Template Name | `gym_welcome` |
-| Body | `Hi {{1}}! Welcome to our gym! Your membership is now active...` ({{1}} = member name) |
+| Body | `Hi {{1}}! Welcome to our business! Your membership is now active...` ({{1}} = member name) |
 | Language | English |
 
 Submit for approval. Wait 24–48 hours.
 
-> ⚠️ **Fix:** The gym app uses `gym_welcome` with body `Hi {{1}}! Welcome to our gym! Your membership is now active...`. Use this exact name and format.
+> ⚠️ **Fix:** The app uses `gym_welcome` with body `Hi {{1}}! Welcome to our business! Your membership is now active...`. Use this exact name and format.
 
 ---
 
@@ -143,7 +143,7 @@ Submit for approval. Wait 24–48 hours.
 | | • **Phone Number ID** |
 | | • **WhatsApp Business Account ID** (WABA ID) |
 
-> You do **not** need Business Manager ID. The gym app uses WABA ID as "Business Account ID".
+> You do **not** need Business Manager ID. The app uses WABA ID as "Business Account ID".
 
 ---
 

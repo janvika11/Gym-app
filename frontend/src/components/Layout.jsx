@@ -39,8 +39,8 @@ export default function Layout() {
             <span className="sidebar-logo-mark">G</span>
           </div>
           <div className="sidebar-brand-text">
-            <span className="sidebar-brand-title">Gym Admin</span>
-            <span className="sidebar-brand-sub">Fitness Hub</span>
+            <span className="sidebar-brand-title">Business Admin</span>
+            <span className="sidebar-brand-sub">Business Hub</span>
           </div>
         </div>
         <nav className="sidebar-nav">

@@ -155,7 +155,7 @@ export async function sendWelcomeTemplate(to, memberName) {
 
 /**
  * Send welcome message to new member.
- * Template gym_welcome: "Hi {{1}}! Welcome to our gym! Your membership is now active..."
+ * Template gym_welcome: "Hi {{1}}! Welcome to our business! Your membership is now active..."
  * {{1}} = member name only.
  */
 export async function sendWelcomeMessage(to, memberName, customMessage, gymName = '', gymWhatsapp) {
@@ -176,7 +176,7 @@ export async function sendWelcomeMessage(to, memberName, customMessage, gymName 
 
 /**
  * Send dynamic message (expiry, fee, inactive, compose).
- * Uses gym_welcome template: "Hi {{1}}! Welcome to our gym! Your membership is now active..."
+ * Uses gym_welcome template: "Hi {{1}}! Welcome to our business! Your membership is now active..."
  * For reminders we send full message as {{1}} – output wraps it.
  * Template name and language can be set per-gym in Settings.
  */

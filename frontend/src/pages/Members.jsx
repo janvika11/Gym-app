@@ -56,7 +56,7 @@ export default function Members() {
   };
 
   const openDetails = (m) => {
-    const baseMessage = `Hi ${m.name}! Your ${m.plan?.name ?? 'gym'} membership is active. See you at the gym! 💪`;
+    const baseMessage = `Hi ${m.name}! Your ${m.plan?.name ?? 'membership'} is active. See you soon! 💪`;
     setReminderMsg(baseMessage);
     setSelected(m);
   };
@@ -187,7 +187,7 @@ export default function Members() {
     if (!selected || !reminderMsg.trim()) return;
     setSending(true);
     try {
-      await sendReminder(selected._id, 'Gym Reminder', reminderMsg.trim());
+      await sendReminder(selected._id, 'Membership Reminder', reminderMsg.trim());
       alert('WhatsApp reminder sent successfully');
     } catch (e) {
       alert(e.message || 'Failed to send reminder');

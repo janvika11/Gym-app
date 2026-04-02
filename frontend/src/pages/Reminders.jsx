@@ -5,11 +5,11 @@ import './Reminders.css';
 const DEFAULT_TEMPLATES = {
   fee_reminder: {
     title: 'Fee reminder',
-    body: 'Hi {name}! Your gym membership fee of ₹{fee} is due on {date}. Please make the payment to continue your fitness journey. 💪',
+    body: 'Hi {name}! Your membership fee of ₹{fee} is due on {date}. Please make the payment to continue your progress. 💪',
   },
   expired: {
     title: 'Membership expired',
-    body: 'Hi {name}! Your gym membership has expired. We miss you! Renew now and get back on track. 🔥',
+    body: 'Hi {name}! Your membership has expired. We miss you! Renew now and get back on track. 🔥',
   },
   attendance: {
     title: 'Attendance reminder',
@@ -29,7 +29,7 @@ export default function Reminders() {
   const [composeOpen, setComposeOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
-  const [overdueBody, setOverdueBody] = useState('Hi {name}! Your gym membership fee is overdue. Please clear your dues to continue enjoying our facilities. 💪');
+  const [overdueBody, setOverdueBody] = useState('Hi {name}! Your membership fee is overdue. Please clear your dues to continue enjoying our services. 💪');
   const [expiringBody, setExpiringBody] = useState('Hi {name}! Your membership is expiring soon. Renew now to keep your progress going. 🏋️');
   const [inactiveBody, setInactiveBody] = useState("Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 💪");
   const [templateKey, setTemplateKey] = useState('fee_reminder');
@@ -187,7 +187,7 @@ export default function Reminders() {
           'fee_overdue',
           overdueMembers.map((m) => m._id),
           'Fee overdue',
-          'Hi {name}! Your gym membership fee is overdue. Please clear your dues to continue enjoying our facilities. 💪'
+          'Hi {name}! Your membership fee is overdue. Please clear your dues to continue enjoying our services. 💪'
         );
       }
 
@@ -204,7 +204,7 @@ export default function Reminders() {
         await sendBulkGroup(
           'inactive',
           inactiveMembers.map((m) => m._id),
-          'We miss you at the gym',
+          'We miss you',
           "Hi {name}! We haven't seen you in a while. Your health is important — come visit us today! 💪"
         );
       }
@@ -299,7 +299,7 @@ export default function Reminders() {
           description="Re-engagement messages"
           color="#64B5F6"
           onSendAll={() =>
-            sendBulkGroup('inactive', inactiveMembers.map((m) => m._id), 'We miss you at the gym', inactiveBody)
+            sendBulkGroup('inactive', inactiveMembers.map((m) => m._id), 'We miss you', inactiveBody)
           }
           sending={sendingGroup === 'inactive'}
         />
@@ -418,7 +418,7 @@ export default function Reminders() {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Gym Reminder"
+                placeholder="e.g. Membership Reminder"
               />
             </div>
             <div className="form-group">

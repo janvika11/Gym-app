@@ -1,6 +1,6 @@
 # WhatsApp Module – copy into any app
 
-This folder is a **standalone, copy-paste module** for [Meta WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api). Use it in this gym app or copy the entire `whatsapp-module` folder into another Node.js project.
+This folder is a **standalone, copy-paste module** for [Meta WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api). Use it in your app or copy the entire `whatsapp-module` folder into another Node.js project.
 
 ## Setup (Meta)
 

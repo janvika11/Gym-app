@@ -181,9 +181,9 @@ export default function Settings() {
       });
       const fresh = await getSettings();
       setForm((prev) => ({ ...prev, openingTime: fresh.openingTime ?? '06:00', closingTime: fresh.closingTime ?? '21:00' }));
-      setSuccess('Gym hours saved.');
+      setSuccess('Hours saved.');
     } catch (err) {
-      setError(err?.message || 'Failed to save gym hours');
+      setError(err?.message || 'Failed to save hours');
     } finally {
       setGymHoursSaving(false);
     }
@@ -234,7 +234,7 @@ export default function Settings() {
       <div className="card form-card settings-card" style={{ marginBottom: 24 }}>
         <h2 style={{ margin: '0 0 12px 0' }}>Connect WhatsApp Business</h2>
         <p className="settings-hint" style={{ marginBottom: 16 }}>
-          Each gym can connect its own WhatsApp Business number. Get these from Meta Business Suite → WhatsApp → API Setup.
+          Each business can connect its own WhatsApp Business number. Get these from Meta Business Suite → WhatsApp → API Setup.
         </p>
         <form onSubmit={handleWhatsappConnect}>
           <div className="form-group">
@@ -264,7 +264,7 @@ export default function Settings() {
               type="text"
               value={whatsappForm.templateName}
               onChange={(e) => setWhatsappForm((p) => ({ ...p, templateName: e.target.value }))}
-              placeholder="e.g. gym_welcome (must match Meta exactly)"
+              placeholder="e.g. business_welcome (must match Meta exactly)"
             />
             <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
               Use {'{{member_name}}'} or {'{{1}}'} in your Meta template. Use <strong>hello_world</strong> while your template is under review.
@@ -315,26 +315,26 @@ export default function Settings() {
           </div>
           {whatsapp.connected && (
             <>
-              <div className="form-group">
+              <div style={{ marginBottom: 12 }}>
                 <label
-  htmlFor="wa-verified"
-  style={{
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    cursor: 'pointer',
-    marginBottom: 0,
-  }}
->
-  <input
-    id="wa-verified"
-    type="checkbox"
-    checked={whatsappForm.verified}
-    onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
-    style={{ margin: 0 }}
-  />
-  Mark as verified (Meta approved)
-</label>
+                  htmlFor="wa-verified"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    cursor: 'pointer',
+                    color: '#e4e4e7',
+                  }}
+                >
+                  <input
+                    id="wa-verified"
+                    type="checkbox"
+                    checked={whatsappForm.verified}
+                    onChange={(e) => setWhatsappForm((p) => ({ ...p, verified: e.target.checked }))}
+                    style={{ margin: 0, width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  Mark as verified (Meta approved)
+                </label>
               </div>
               <p className="settings-success" style={{ marginBottom: 12 }}>
                 Connected {whatsapp.verified ? '✓ Verified' : '(Pending verification in Meta)'}
@@ -382,9 +382,9 @@ export default function Settings() {
       </div>
 
       <div className="card form-card settings-card" style={{ marginBottom: 24 }}>
-        <h2 style={{ margin: '0 0 12px 0' }}>Gym hours</h2>
+        <h2 style={{ margin: '0 0 12px 0' }}>Business hours</h2>
         <p className="settings-hint" style={{ marginBottom: 16 }}>
-          Set your gym's opening and closing times (e.g. 6 AM – 9 PM).
+          Set your business's opening and closing times (e.g. 6 AM – 9 PM).
         </p>
         <form onSubmit={handleSaveGymHours}>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -407,7 +407,7 @@ export default function Settings() {
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={gymHoursSaving}>
-              {gymHoursSaving ? 'Saving...' : 'Save gym hours'}
+              {gymHoursSaving ? 'Saving...' : 'Save hours'}
             </button>
           </div>
         </form>
@@ -421,7 +421,7 @@ export default function Settings() {
           </button>
         </div>
         <p className="settings-hint">
-          Placeholders: {'{name}'}, {'{gym}'}, {'{fee}'}, {'{date}'}, {'{expiry}'}, {'{plan}'}
+          Placeholders: {'{name}'}, {'{gym}'} (business name), {'{fee}'}, {'{date}'}, {'{expiry}'}, {'{plan}'}
         </p>
         <form onSubmit={handleSubmit}>
           {BUILTINS.map(({ id, titleKey, msgKey, defaultTitle }) => (
@@ -477,7 +477,6 @@ export default function Settings() {
               </button>
             </div>
           ))}
-          
 
           {success && <p className="settings-success">{success}</p>}
           {error && <p className="form-error">{error}</p>}
