@@ -264,7 +264,7 @@ export default function Settings() {
               type="text"
               value={whatsappForm.templateName}
               onChange={(e) => setWhatsappForm((p) => ({ ...p, templateName: e.target.value }))}
-              placeholder="e.g. business_welcome (must match Meta exactly)"
+              placeholder="e.g. gym_welcome (must match Meta exactly)"
             />
             <p className="settings-hint" style={{ marginTop: 4, fontSize: 12 }}>
               Use {'{{member_name}}'} or {'{{1}}'} in your Meta template. Use <strong>hello_world</strong> while your template is under review.
