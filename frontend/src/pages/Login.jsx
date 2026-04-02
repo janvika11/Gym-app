@@ -69,7 +69,7 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Gym Admin</h1>
+        <h1>Business Admin</h1>
         <p className="login-sub">
           {mode === 'login' ? 'Sign in to manage members and plans' : 'Reset your password'}
         </p>
@@ -82,7 +82,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@gym.com"
+              placeholder="admin@business.com"
               required
               autoComplete="email"
             />
@@ -125,7 +125,7 @@ export default function Login() {
             </button>
           </p>
           <p className="login-footer">
-            New gym? <Link to="/signup">Sign up</Link>
+            New business? <Link to="/signup">Sign up</Link>
           </p>
         </form>
         ) : (
@@ -136,7 +136,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@gym.com"
+                placeholder="admin@business.com"
                 required
                 autoComplete="email"
               />

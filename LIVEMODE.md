@@ -35,9 +35,9 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 | User Data Deletion | `https://YOUR-VERCEL-DOMAIN.vercel.app/#/privacy#data-deletion` |
 | Contact Email | Your email |
 | App Icon | Upload (required) |
-| Display Name | e.g. "Gym Admin" |
+| Display Name | e.g. "Business Admin" |
 | Category | Business (or appropriate) |
-| App Purpose | Describe WhatsApp usage (e.g. gym reminders) |
+| App Purpose | Describe WhatsApp usage (e.g. business reminders) |
 
 ---
 
@@ -56,7 +56,7 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 | Open | Action |
 |------|--------|
 | [business.facebook.com](https://business.facebook.com) | **WhatsApp Manager** → **Message Templates** |
-| **Create template** | Name: `gym_welcome`, Body: `Hi {{1}}! Welcome to our gym! Your membership is now active...` |
+| **Create template** | Name: `gym_welcome`, Body: `Hi {{1}}! Welcome to our business! Your membership is now active...` |
 | | Category: UTILITY or MARKETING |
 | | Body: `{{1}}` (single parameter) |
 | | Language: English |
@@ -81,7 +81,7 @@ Step-by-step guide for **Live mode** (production). Each step shows **which websi
 
 | Open | Action |
 |------|--------|
-| `https://YOUR-VERCEL-DOMAIN.vercel.app` | Log in to your gym app |
+| `https://YOUR-VERCEL-DOMAIN.vercel.app` | Log in to your business app |
 | **Settings** → **Connect WhatsApp Business** | Paste Phone Number ID, Access Token |
 | | Click **Save WhatsApp credentials** |
 | | After Meta approves number: check **Mark as verified** → Save |

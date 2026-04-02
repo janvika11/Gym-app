@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-const defaultWelcome = "Hi {name}, welcome to our gym! We're excited to have you. 💪";
-const defaultFeeReminder = 'Hi {name}! Your gym membership fee of ₹{fee} is due on {date}. Please make the payment to continue your fitness journey. 💪';
-const defaultOverdue = 'Hi {name}! Your gym membership fee is overdue. Please clear your dues to continue enjoying our facilities. 💪';
+const defaultWelcome = "Hi {name}, welcome to our business! We're excited to have you. 💪";
+const defaultFeeReminder = 'Hi {name}! Your membership fee of ₹{fee} is due on {date}. Please make the payment to continue your progress. 💪';
+const defaultOverdue = 'Hi {name}! Your membership fee is overdue. Please clear your dues to continue enjoying our services. 💪';
 const defaultExpiring = 'Hi {name}! Your membership is expiring soon. Renew now to keep your progress going. 🏋️';
-const defaultInactive = "Hi {name}! We haven't seen you at the gym in a while. Come back and crush your goals! 💪";
+const defaultInactive = "Hi {name}! We haven't seen you in a while. Come back and crush your goals! 💪";
 
 const gymSettingsSchema = new mongoose.Schema(
   {

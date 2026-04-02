@@ -1,6 +1,6 @@
-# Gym Admin – Multi-Gym SaaS with WhatsApp Reminders
+# Business Admin – Multi-Business SaaS with WhatsApp Reminders
 
-A full-stack **gym management SaaS** for admins: members, plans, attendance, fees, and **WhatsApp reminders** via Meta Cloud API. Supports **multiple gyms**, each with its own WhatsApp Business number.
+A full-stack **business management SaaS** for admins: members, plans, attendance, fees, and **WhatsApp reminders** via Meta Cloud API. Supports **multiple businesses**, each with its own WhatsApp Business number.
 
 ---
 
@@ -12,7 +12,7 @@ A full-stack **gym management SaaS** for admins: members, plans, attendance, fee
 - [Prerequisites](#prerequisites)
 - [Quick Start (Local Development)](#quick-start-local-development)
 - [Deployment](#deployment)
-- [Multi-Gym WhatsApp](#multi-gym-multi-whatsapp--how-it-works)
+- [Multi-Business WhatsApp](#multi-business-multi-whatsapp--how-it-works)
 - [WhatsApp Setup](#whatsapp-setup)
 - [Admin Guide](#admin-guide--how-to-use-the-app)
 - [API Reference](#api-reference)
@@ -38,14 +38,14 @@ Replace with your actual Vercel domain if different.
 
 ## Features
 
-- **Admin login** – JWT auth; signup creates gym + admin
+- **Admin login** – JWT auth; signup creates business + admin
 - **Members** – Full CRUD, bulk CSV import (upload or paste), send welcome WhatsApp on add
 - **Plans** – Configurable plans (name, duration, price)
 - **Fees & Plans** – View members by plan, fee status (paid/pending/overdue)
 - **Attendance** – Check-in/check-out, today's list, monthly view, peak hours
 - **Dashboard** – Active members, revenue, pending dues, attendance stats
 - **WhatsApp reminders** – Send to one or many members; auto reminders (expiry, overdue, inactive)
-- **Multi-gym WhatsApp** – Each gym connects its own WhatsApp Business number in Settings
+- **Multi-business WhatsApp** – Each business connects its own WhatsApp Business number in Settings
 
 ---
 
@@ -154,9 +154,9 @@ Frontend runs at **http://localhost:5173** (or 3000). It proxies `/api` to the b
 
 ---
 
-## Multi-Gym, Multi-WhatsApp – How It Works
+## Multi-Business, Multi-WhatsApp – How It Works
 
-Each gym can use its **own WhatsApp Business number**. Messages (welcome, reminders, expiry) are sent from that gym's number, not a shared one.
+Each business can use its **own WhatsApp Business number**. Messages (welcome, reminders, expiry) are sent from that business's number, not a shared one.
 
 ### How to Use It
 
@@ -164,37 +164,37 @@ Each gym can use its **own WhatsApp Business number**. Messages (welcome, remind
 |------|-------|------------|
 | 1 | [developers.facebook.com](https://developers.facebook.com) | Create Meta app, add WhatsApp, get **Phone Number ID** |
 | 2 | [business.facebook.com](https://business.facebook.com) | Create System User, generate token, copy **Access Token** |
-| 3 | Your gym app → **Settings** | Scroll to **Connect WhatsApp Business** |
+| 3 | Your business app → **Settings** | Scroll to **Connect WhatsApp Business** |
 | 4 | Same form | Paste **Phone Number ID** and **Access Token** → **Save** |
 | 5 | After Meta approves | Check **Mark as verified (Meta approved)** → Save again |
 
-### Template name & language (per gym)
+### Template name & language (per business)
 
 In **Settings → Connect WhatsApp Business**, you can optionally set:
 - **Template name** – Your Meta template name (e.g. `gym_welcome`). Use `{{1}}` in the body. Leave blank for default.
 - **Template language** – `en` or `en_US` to match Meta. Leave blank for default.
 
-Each gym can use its own template without code changes.
+Each business can use its own template without code changes.
 
 ### What Happens After You Connect
 
-- **Welcome messages** (new members) → sent from your gym's number
-- **Reminders** (single or bulk) → sent from your gym's number
-- **Expiry reminders** (daily cron) → sent from your gym's number (only when **verified**)
+- **Welcome messages** (new members) → sent from your business's number
+- **Reminders** (single or bulk) → sent from your business's number
+- **Expiry reminders** (daily cron) → sent from your business's number (only when **verified**)
 
 ### Summary
 
 | Scenario | Who connects WhatsApp | Where messages come from |
 |----------|------------------------|---------------------------|
-| Gym A has connected | Gym A admin in Settings | Gym A's number |
-| Gym B has connected | Gym B admin in Settings | Gym B's number |
-| Gym C has not connected | — | Backend env (or nothing) |
+| Business A has connected | Business A admin in Settings | Business A's number |
+| Business B has connected | Business B admin in Settings | Business B's number |
+| Business C has not connected | — | Backend env (or nothing) |
 
 ---
 
 ## WhatsApp Setup
 
-Connect a WhatsApp Business number to the Gym Management System. Replace `gym-app-three-mu.vercel.app` with your domain if different.
+Connect a WhatsApp Business number to the Business Management System. Replace `gym-app-three-mu.vercel.app` with your domain if different.
 
 ### Step 1 — Create Meta Developer Account
 
@@ -241,7 +241,7 @@ Click **Save Changes**.
 
    | Field | Value |
    |-------|-------|
-   | Business Name | Your gym name (e.g. PowerFit Gym) |
+   | Business Name | Your business name (e.g. PowerFit Gym) |
    | Business Website | `https://gym-app-three-mu.vercel.app` |
    | Country | Select your country |
    | Address | Optional |
@@ -253,8 +253,8 @@ Click **Save Changes**.
 
    | Field | Value |
    |-------|-------|
-   | Display Name | Your gym name |
-   | Category | Fitness / Gym |
+   | Display Name | Your business name |
+   | Category | Business |
    | Description | Optional |
 
    Click **Next**.
@@ -268,7 +268,7 @@ Click **Save Changes**.
 
 1. Open [business.facebook.com/wa/manage/message-templates](https://business.facebook.com/wa/manage/message-templates)
 2. Click **Create Template**
-3. Category: **Utility**, Name: `gym_welcome`, Body: `Hi {{1}}! Welcome to our gym! Your membership is now active...` ({{1}} = member name), Language: English
+3. Category: **Utility**, Name: `gym_welcome`, Body: `Hi {{1}}! Welcome to our business! Your membership is now active...` ({{1}} = member name), Language: English
 4. Submit for approval (wait 24–48 hours)
 
 ### Step 7 — Generate System User Access Token
@@ -291,7 +291,7 @@ Open **developers.facebook.com → Your App → WhatsApp → API Setup** and cop
  Click PUBLISH
  This switches **App Mode** from Development to **Live**. Fix any missing Basic settings if Meta shows errors. Do this after phone number is added and template is approved.
 
-### Step 10 — Connect WhatsApp to Gym Platform
+### Step 10 — Connect WhatsApp to Business Platform
 
 1. Open [gym-app-three-mu.vercel.app](https://gym-app-three-mu.vercel.app) and log in
 2. Go to **Settings → Connect WhatsApp Business**
@@ -392,14 +392,14 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | **Auto reminders** | Overdue, Expiring soon, Inactive – click to send to filtered groups |
 | **View history** | Reminders → Logs tab |
 
-**Placeholders:** `{name}`, `{gym}`, `{fee}`, `{date}`, `{expiry}`, `{plan}`
+**Placeholders:** `{name}`, `{gym}` (business name), `{fee}`, `{date}`, `{expiry}`, `{plan}`
 
 ### Settings
 
-- **Gym hours:** Set opening and closing times (e.g. 6 AM – 9 PM)
+- **Business hours:** Set opening and closing times (e.g. 6 AM – 9 PM)
 - **WhatsApp message templates:** Customize welcome, fee reminder, overdue, expiring, inactive messages
 - **Add custom templates:** For use in Reminders
-- **Connect WhatsApp Business:** Per-gym Phone Number ID, Access Token, mark verified
+- **Connect WhatsApp Business:** Per-business Phone Number ID, Access Token, mark verified
 
 ---
 
@@ -407,11 +407,11 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/auth/signup` | Sign up (gym + admin) |
+| POST | `/api/auth/signup` | Sign up (business + admin) |
 | POST | `/api/auth/login` | Login → JWT |
 | GET | `/api/auth/me` | Current user (Bearer token) |
-| POST | `/api/gyms/connect-whatsapp` | Save gym WhatsApp credentials |
-| GET | `/api/gyms/whatsapp-status` | Gym WhatsApp connection status |
+| POST | `/api/gyms/connect-whatsapp` | Save business WhatsApp credentials |
+| GET | `/api/gyms/whatsapp-status` | Business WhatsApp connection status |
 | GET/POST/PUT/DELETE | `/api/members` | Members CRUD |
 | POST | `/api/members/bulk` | Bulk import members |
 | POST | `/api/members/:id/remind` | Send expiry reminder to one member |
@@ -434,11 +434,11 @@ John Doe,9876543210,john@example.com,Monthly,2024-01-01,2024-01-31
 | Issue | Fix |
 |-------|-----|
 | "Template not found" | Create `gym_welcome` in Meta; wait for approval |
-| Messages not sending | Check Phone Number ID and token; verify gym WhatsApp in Settings |
+| Messages not sending | Check Phone Number ID and token; verify business WhatsApp in Settings |
 | Token expired | Generate new System User token; update env or Settings |
 | Meta Basic settings won't save | Use correct User Data Deletion URL: `#/privacy#data-deletion` |
 | App Domain disappears | Enter domain only (no https://); click Save Changes before leaving |
-| Messages not delivered / template error | Create template in Meta: Name `gym_welcome`, Body `Hi {{1}}! Welcome to our gym! Your membership is now active...`, Category Utility. Wait for approval. App must be in Live mode. |
+| Messages not delivered / template error | Create template in Meta: Name `gym_welcome`, Body `Hi {{1}}! Welcome to our business! Your membership is now active...`, Category Utility. Wait for approval. App must be in Live mode. |
 
 ### Sandbox vs Live Mode
 
@@ -451,7 +451,7 @@ If the app shows "Sandbox" in an alert, that's just a label in the code. To ensu
 
 2. **Use approved templates** – Outbound messages to members who haven't messaged you first **must** use an approved template (e.g. `gym_welcome`). Free-text messages only work within 24 hours of the member's last message.
 
-3. **Quick test** – Send "Hi" from your personal phone to the gym's WhatsApp Business number. Then click **Remind** in the app. If it works, your setup is correct.
+3. **Quick test** – Send "Hi" from your personal phone to the business's WhatsApp Business number. Then click **Remind** in the app. If it works, your setup is correct.
 
 ---
 

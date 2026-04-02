@@ -10,14 +10,14 @@ export default function Terms() {
         <section>
           <h2>1. Acceptance of Terms</h2>
           <p>
-            By using Gym Admin (&quot;the app&quot;, &quot;we&quot;, &quot;our&quot;), you agree to these Terms of Service. If you do not agree, do not use the service.
+            By using Business Admin (&quot;the app&quot;, &quot;we&quot;, &quot;our&quot;), you agree to these Terms of Service. If you do not agree, do not use the service.
           </p>
         </section>
 
         <section>
           <h2>2. Description of Service</h2>
           <p>
-            Gym Admin is a gym management platform that helps gym owners manage members, plans, attendance, fees, and send WhatsApp reminders. The service is provided &quot;as is&quot;.
+            Business Admin is a business management platform that helps business owners manage customers, plans, attendance, fees, and send WhatsApp reminders. The service is provided &quot;as is&quot;.
           </p>
         </section>
 
